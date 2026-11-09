@@ -762,6 +762,7 @@ select.vin{text-align:left;padding-right:4px}
 .acct span{font-weight:800;font-size:14px;line-height:1}
 .lock-form.col{flex-direction:column}.lock-form.col .btn.grow{flex:1 1 auto}
 #viewAuth .lock-wrap{min-height:52vh}
+.gate-or{margin:18px 0 10px!important;font-size:13.5px!important}
 .gated{--side-now:0px}
 </style>
 </head>
@@ -1035,6 +1036,16 @@ function gateOffsite(ip){
     <p>Cremer Recipes opens without signing in on the plant’s network. This device isn’t on it${ip?` (its address is <b>${esc(ip)}</b>)`:''}.</p>
     <p>MLTs, Leads, Admins and Owners can sign in with their <b>Packaging Lead Hub</b> account to use it from anywhere:</p>
     ${signInForm()}`);
+  bindSignIn($('#viewAuth'));
+}
+function gateUnreachable(){
+  gate(`<div class="lock-ico">📡</div>
+    <h2>Can’t reach Cremer Recipes</h2>
+    <p>The recipe service didn’t answer. Check the connection, then try again.</p>
+    <div class="pw-acts"><button class="btn primary grow" id="gReload" type="button">Try again</button></div>
+    <p class="gate-or">MLTs, Leads, Admins and Owners can also sign in with their <b>Packaging Lead Hub</b> account:</p>
+    ${signInForm()}`);
+  $('#gReload').onclick=()=>location.reload();
   bindSignIn($('#viewAuth'));
 }
 function gateNoAccess(a){
@@ -1451,7 +1462,7 @@ CloudSync.start({
     if (appOpen || (cloud.access && cloud.access.canRead)) return;
     if (r.state==='ok') openApp();
     else if (r.state==='offsite'){ if (!cloud.checking && !cloud.access) gateOffsite(r.ip); }
-    else if (!r.hasData && !cloud.checking && !cloud.access) gateMessage('📡','Can’t reach Cremer Recipes','Check the connection, then try again.', true);
+    else if (!r.hasData && !cloud.checking && !cloud.access) gateUnreachable();
   },
   onSignedOut: () => { cloud.access=null; cloud.checking=null; $('#acct').hidden=true; if (appOpen && state.tab==='manage') renderManage(); },
   onSignedIn: username => {

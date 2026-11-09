@@ -1,9 +1,11 @@
 // cremerRecipes: hands the Cremer recipes (and the update history) to devices
 // on the plant network, so the lookup needs no sign-in there.
 //
-// - Allowed addresses: the `allowedIps` list in the Firestore document
-//   cremer/access (addresses and ranges, e.g. "203.0.113.7", "203.0.113.0/24").
-//   Only the Firebase console can change it; the rules give apps no access.
+// - Allowed addresses: the same list as LineUp's sign-in check, the Firestore
+//   document jde-sched-access/network: `allowed` (set in the Firebase console,
+//   e.g. "203.0.113.7", "203.0.113.0/24") plus the home networks Owners allow
+//   for 30 days from the Hub (`temporary`). No app can read or change it.
+//   LineUp's `enabled` switch doesn't apply here: the list is always checked.
 // - Anyone else gets 403. `?ip` shows the address the function sees, to fill
 //   in that list.
 // - Reads are kept low: the recipes are re-read only when cremer/meta (stamped
@@ -11,7 +13,7 @@
 const { onRequest } = require("firebase-functions/https");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
-const { clientIp, isAllowed } = require("./ip");
+const { clientIp, isAllowed, allowedNow } = require("./ip");
 
 initializeApp();
 const db = getFirestore();
@@ -22,13 +24,14 @@ const HISTORY_LIMIT = 200;
 const ACCESS_TTL = 30 * 1000; // re-read the allowed addresses at most every 30 s
 const META_TTL = 10 * 1000;   // check for changes at most every 10 s
 
-let access = { at: 0, list: [] };
+const NETWORK_DOC = "jde-sched-access/network";
+let access = { at: 0, settings: null };
 async function allowedList() {
-  if (Date.now() - access.at < ACCESS_TTL) return access.list;
-  const d = await db.doc("cremer/access").get();
-  const list = d.exists ? d.get("allowedIps") : null;
-  access = { at: Date.now(), list: Array.isArray(list) ? list : [] };
-  return access.list;
+  if (Date.now() - access.at >= ACCESS_TTL) {
+    const d = await db.doc(NETWORK_DOC).get();
+    access = { at: Date.now(), settings: d.exists ? d.data() : null };
+  }
+  return allowedNow(access.settings);
 }
 
 const iso = t => (t && t.toDate ? t.toDate().toISOString() : null);

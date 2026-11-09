@@ -9,7 +9,7 @@ It is the `cremer-recipes.html` app that was shared in Teams, with these changes
   the plant's list open the recipes straight away. Anywhere else the app shows
   "Only on the plant network". The check runs on the server (the
   `cremerRecipes` Cloud Function), not in the page, so it can't be bypassed by
-  copying the page.
+  copying the page. It uses the same list of allowed networks as LineUp.
 - **The recipes live in the database, not in the file.** They are in Firebase
   Firestore (project `jde-schedule-database`, shared with Packaging Lead Hub and
   JDE Sched). This repository is public, so it holds only the app; the recipe
@@ -46,20 +46,31 @@ rules below and the function enforce all of this, whatever the page does.
 `functions/index.js` is an HTTPS Cloud Function, `cremerRecipes`
 (`https://us-central1-jde-schedule-database.cloudfunctions.net/cremerRecipes`).
 The app asks it for the recipes. It looks at the address the request came from
-and answers only if that address is in the `allowedIps` list of the Firestore
-document `cremer/access`. Everyone else gets 403, and the database itself
-refuses to hand the recipes to anyone who isn't signed in.
+and answers only if that address is on **LineUp's list of allowed networks**,
+the Firestore document `jde-sched-access/network` (set up in the LineUp App
+session; see `docs/NETWORK_ACCESS_PLAN.md` in the JDE-Sched repository).
+Everyone else gets 403, and the database itself refuses to hand the recipes to
+anyone who isn't signed in.
 
+- **One list for both apps:** the `allowed` addresses (the company's, set in
+  the Firebase console) and the home networks Owners allow for 30 days with
+  the Hub's **Admin → LineUp: Network Access → Allow LineUp from this
+  network** button (`temporary`, until their end date). Adding a network for
+  LineUp adds it for Cremer Recipes too.
+- **LineUp's `enabled` switch doesn't apply here.** With it off, LineUp still
+  has its shift passwords, but Cremer Recipes would be open to anyone, so
+  Cremer always checks the list. An empty or missing list lets nobody in
+  without signing in.
 - Addresses can be single (`203.0.113.7`) or ranges (`203.0.113.0/24`), IPv4 or
-  IPv6 (`2001:db8:1234::/48`). An empty or missing list lets nobody in.
-- The list is read again every 30 seconds, so changes need no redeploy.
+  IPv6 (`2001:db8:1234::/48`). The list is read again every 30 seconds, so
+  changes need no redeploy.
 - Opening the function's address with `?ip` at the end shows the address it
-  sees for that device. Use it on a plant PC to find the address to allow.
+  sees for that device.
 - Only the address added by Google's own front end is trusted, so a device
   can't pretend to be on the plant network by sending a made-up header.
-- It only works on devices using the plant's internet connection: phones on
-  mobile data, home computers and possibly VPN connections are "off-site".
-  If the plant's public address changes, update the list.
+- It only works on devices using an allowed connection: phones on mobile data
+  are "off-site". Owners: only press the Hub's button on home Wi-Fi, never on
+  mobile data (a mobile carrier's address is shared with strangers).
 - To keep database reads low, the function re-reads the recipes only when
   `cremer/meta` (stamped by every change in Manage) says something changed.
   Normal use stays inside Firestore's free daily allowance. Cloud Functions
@@ -76,9 +87,12 @@ refuses to hand the recipes to anyone who isn't signed in.
    `jde-schedule-database` → **Firestore Database → Rules** → replace them with
    the contents of [`firestore.rules`](firestore.rules) (also below) →
    **Publish**. That file is the full rule set: the JDE Sched and Packaging Lead
-   Hub rules exactly as they are in the AutoCoordinator README, plus the Cremer
-   Recipes section at the end. Whenever the rules change in either app, keep
-   both sections, and update the copy in the AutoCoordinator README too.
+   Hub rules combined (the JDE-Sched repository's `firestore.rules` and the
+   AutoCoordinator README each hold only part of what is published now), plus
+   the Cremer Recipes section. **Paste this file, not the copy from JDE-Sched or
+   the AutoCoordinator README**, or the other apps' newest rules or Cremer's
+   would be dropped. Whenever the rules change in any of the three apps, give
+   that change to all three copies.
 3. **Deploy the function** (needs the Blaze plan). The easiest way is Google
    Cloud Shell, which runs in the browser with nothing to install: open
    https://shell.cloud.google.com, signed in with the Google account that owns
@@ -95,17 +109,19 @@ refuses to hand the recipes to anyone who isn't signed in.
    take a few minutes, turns on the Google Cloud services functions need, and
    may ask about a cleanup policy for old builds (accept the default). The
    functions are in their own codebase (`cremer-recipes`), so deploying never
-   touches other functions in the project. Deploy again whenever
+   touches other functions in the project, such as LineUp's
+   `allowedNetworksOnly` and `lineupNetwork` (JDE-Sched's `default` codebase),
+   and deploying those never touches this one. Deploy again whenever
    `functions/` changes.
-4. **Allow the plant's address:** on a PC on the plant network, open
+4. **The allowed networks:** nothing extra to do. Cremer Recipes uses
+   LineUp's list (`jde-sched-access/network`), which already has the company
+   address in `allowed`. If that document doesn't exist yet, create it as
+   LineUp's `docs/NETWORK_ACCESS_PLAN.md` describes (collection
+   `jde-sched-access`, document `network`, array `allowed`). For home, an
+   Owner presses the Hub's **Allow LineUp from this network** button on home
+   Wi-Fi once LineUp's update is live. To check a device, open
    https://us-central1-jde-schedule-database.cloudfunctions.net/cremerRecipes?ip
-   and note the address. In the Firebase console → **Firestore Database →
-   Data** → start (or open) the collection `cremer` → add a document with ID
-   `access` and a field `allowedIps` of type **array**, with the address as a
-   string element. Add every address or range the plant uses (ask IT; if the
-   PC shows an IPv6 address, the plant's IPv6 range, for example a `/48` or
-   `/56`, is safer than one address). Within 30 seconds, devices on those
-   addresses open the recipes without signing in.
+   on it.
 5. **Sign-in domain:** `jaiserpenales77.github.io` must be in **Authentication
    → Settings → Authorized domains**. It is already there if Packaging Lead
    Hub signs in from GitHub Pages.
@@ -130,7 +146,8 @@ refuses to hand the recipes to anyone who isn't signed in.
   are never changed or deleted. Signed-in screens show the newest 500, the
   plant-network screens the newest 200.
 - `cremer/meta`: `at` and `by` of the latest change, written with every change.
-- `cremer/access`: `allowedIps`, the plant's addresses. Firebase console only.
+- `jde-sched-access/network`: LineUp's allowed networks, read by the
+  function (see above). No app can read or change it.
 
 Signed-in screens keep an offline copy (Firestore's IndexedDB cache): if the
 network drops they keep showing the last recipes, and changes made offline are
@@ -158,6 +175,24 @@ service cloud.firestore {
     }
     match /jde-sched/{shift}/{rest=**} {
       allow read, write: if jdeShiftAccount(shift);
+    }
+    // Any of the three shift accounts: they read the Packaging Lead Hub's
+    // Stored Data (only to read its Line Rates, for the estimated changeover
+    // times) and can't change it.
+    function jdeAnyShiftAccount() {
+      return request.auth != null
+        && request.auth.token.email in ['1st@jde-sched.local', '2nd@jde-sched.local', '3rd@jde-sched.local'];
+    }
+    // Each shift's people's names - only the names - so another shift can
+    // pick them for overtime. Any shift reads all three lists; a shift
+    // writes only its own. Schedules, boards, time off and skills stay in
+    // each shift's private document above.
+    match /jde-sched-names/{shift} {
+      allow read: if jdeAnyShiftAccount();
+      allow write: if jdeShiftAccount(shift)
+        && request.resource.data.keys().hasOnly(['names'])
+        && request.resource.data.names is list
+        && request.resource.data.names.size() <= 1000;
     }
 
     // Packaging Lead Hub. Accounts are username@pk030.local.
@@ -211,8 +246,9 @@ service cloud.firestore {
     }
     // Stored Data: Leads read it and add new bulk/FG items and line rates;
     // only admins change or remove them, and change leads and their usernames.
+    // JDE Sched's shift accounts can also read it (Line Rates).
     match /pk030/storedData {
-      allow read: if isLead();
+      allow read: if isLead() || jdeAnyShiftAccount();
       allow create: if isAdmin()
         || (isLead() && request.resource.data.keys().hasOnly(['bulkItems', 'fgItems', 'lineRates']));
       allow update: if isAdmin() || (isLead() && onlyAddsItems());
@@ -260,7 +296,8 @@ service cloud.firestore {
     }
     // Cremer Recipes (LineUpCremerRecipes). Devices on the plant network get
     // the recipes from the cremerRecipes function (which checks their IP
-    // address against cremer/access), with no sign-in. Signed in with a
+    // address against LineUp's list, jde-sched-access/network), with no
+    // sign-in. Signed in with a
     // Packaging Lead Hub account, MLT and up read them here from anywhere;
     // Lead and up add, change, remove (marked removed, never deleted) and
     // restore them. Every write is stamped with the account and server time.
@@ -313,10 +350,6 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['at', 'by'])
         && cremerStamped(request.resource.data);
     }
-    // The plant's IP addresses (allowedIps): Firebase console only.
-    match /cremer/access {
-      allow read, write: if false;
-    }
   }
 }
 ```
@@ -344,4 +377,5 @@ serve the folder (`python3 -m http.server 8000`), and open
 `http://localhost:8000/?emulator=9099,8080,5001`. The `emulator` parameter is
 ignored anywhere except `localhost`, so the live site always uses the real
 database and function. In the emulator the function treats every caller as
-`127.0.0.1`; put that in `cremer/access` to test the plant-network view.
+`127.0.0.1`; put that in `allowed` of `jde-sched-access/network` (in the
+emulator) to test the plant-network view.

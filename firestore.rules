@@ -16,6 +16,24 @@ service cloud.firestore {
     match /jde-sched/{shift}/{rest=**} {
       allow read, write: if jdeShiftAccount(shift);
     }
+    // Any of the three shift accounts: they read the Packaging Lead Hub's
+    // Stored Data (only to read its Line Rates, for the estimated changeover
+    // times) and can't change it.
+    function jdeAnyShiftAccount() {
+      return request.auth != null
+        && request.auth.token.email in ['1st@jde-sched.local', '2nd@jde-sched.local', '3rd@jde-sched.local'];
+    }
+    // Each shift's people's names - only the names - so another shift can
+    // pick them for overtime. Any shift reads all three lists; a shift
+    // writes only its own. Schedules, boards, time off and skills stay in
+    // each shift's private document above.
+    match /jde-sched-names/{shift} {
+      allow read: if jdeAnyShiftAccount();
+      allow write: if jdeShiftAccount(shift)
+        && request.resource.data.keys().hasOnly(['names'])
+        && request.resource.data.names is list
+        && request.resource.data.names.size() <= 1000;
+    }
 
     // Packaging Lead Hub. Accounts are username@pk030.local.
     function signedIn() {
@@ -68,8 +86,9 @@ service cloud.firestore {
     }
     // Stored Data: Leads read it and add new bulk/FG items and line rates;
     // only admins change or remove them, and change leads and their usernames.
+    // JDE Sched's shift accounts can also read it (Line Rates).
     match /pk030/storedData {
-      allow read: if isLead();
+      allow read: if isLead() || jdeAnyShiftAccount();
       allow create: if isAdmin()
         || (isLead() && request.resource.data.keys().hasOnly(['bulkItems', 'fgItems', 'lineRates']));
       allow update: if isAdmin() || (isLead() && onlyAddsItems());
@@ -117,7 +136,8 @@ service cloud.firestore {
     }
     // Cremer Recipes (LineUpCremerRecipes). Devices on the plant network get
     // the recipes from the cremerRecipes function (which checks their IP
-    // address against cremer/access), with no sign-in. Signed in with a
+    // address against LineUp's list, jde-sched-access/network), with no
+    // sign-in. Signed in with a
     // Packaging Lead Hub account, MLT and up read them here from anywhere;
     // Lead and up add, change, remove (marked removed, never deleted) and
     // restore them. Every write is stamped with the account and server time.
@@ -169,10 +189,6 @@ service cloud.firestore {
       allow write: if isLead()
         && request.resource.data.keys().hasOnly(['at', 'by'])
         && cremerStamped(request.resource.data);
-    }
-    // The plant's IP addresses (allowedIps): Firebase console only.
-    match /cremer/access {
-      allow read, write: if false;
     }
   }
 }

@@ -1,6 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert");
-const { clientIp, isAllowed } = require("./ip");
+const { clientIp, isAllowed, allowedNow } = require("./ip");
 
 const req = (xff, ip) => ({ headers: xff == null ? {} : { "x-forwarded-for": xff }, ip });
 
@@ -29,4 +29,25 @@ test("refuses everything when the list is empty, missing or unreadable", () => {
   assert.ok(!isAllowed("203.0.113.7", ["not an ip", "1.2.3.4/99"]));
   assert.ok(!isAllowed("", ["0.0.0.0/0"]));
   assert.ok(!isAllowed("garbage", ["0.0.0.0/0"]));
+});
+
+test("uses LineUp's list: permanent networks and the Hub's that haven't run out", () => {
+  const ts = ms => ({ toMillis: () => ms });
+  const now = 1_000_000;
+  const settings = {
+    enabled: false, // LineUp's switch: ignored here
+    allowed: ["20.33.20.4"],
+    temporary: [
+      { ip: "98.1.2.3", by: "owner1", until: ts(now + 1000) },
+      { ip: "98.9.9.9", by: "owner2", until: ts(now - 1) },
+      { ip: 42, until: ts(now + 1000) },
+      null
+    ]
+  };
+  assert.deepEqual(allowedNow(settings, now), ["20.33.20.4", "98.1.2.3"]);
+  assert.ok(isAllowed("20.33.20.4", allowedNow(settings, now)), "the company, even with enabled = false");
+  assert.ok(isAllowed("98.1.2.3", allowedNow(settings, now)), "a home network within its 30 days");
+  assert.ok(!isAllowed("98.9.9.9", allowedNow(settings, now)), "a home network past its date");
+  assert.deepEqual(allowedNow(null, now), []);
+  assert.deepEqual(allowedNow({}, now), []);
 });

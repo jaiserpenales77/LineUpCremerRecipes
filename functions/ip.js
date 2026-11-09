@@ -41,4 +41,16 @@ function isAllowed(ip, list) {
   });
 }
 
-module.exports = { clientIp, isAllowed };
+// The networks allowed now, from LineUp's document jde-sched-access/network:
+// the console's permanent list (allowed) and the networks Owners allowed from
+// the Hub (temporary: [{ ip, until }]) that haven't run out. LineUp's
+// `enabled` switch is ignored on purpose: with the check off LineUp still has
+// its shift passwords, but Cremer Recipes would be open to anyone.
+function allowedNow(settings, now = Date.now()) {
+  const temporary = (Array.isArray(settings && settings.temporary) ? settings.temporary : [])
+    .filter(t => t && typeof t.ip === "string" && t.until && typeof t.until.toMillis === "function" && t.until.toMillis() > now)
+    .map(t => t.ip);
+  return [...(Array.isArray(settings && settings.allowed) ? settings.allowed : []), ...temporary];
+}
+
+module.exports = { clientIp, isAllowed, allowedNow };

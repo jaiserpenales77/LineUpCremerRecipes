@@ -1,7 +1,8 @@
 // Gets the recipes and keeps them up to date. Two ways in:
 //
 // 1. No sign-in, on the plant network: the cremerRecipes function (functions/)
-//    hands the recipes to devices whose IP address is in cremer/access. The app
+//    hands the recipes to devices whose IP address is on LineUp's list of
+//    allowed networks (jde-sched-access/network). The app
 //    asks again every minute and whenever it comes back into view.
 // 2. Signed in with a Packaging Lead Hub account (username@pk030.local, account
 //    type in pk030-users/{uid}, owners in pk030/admins): MLT and up read the
@@ -13,7 +14,7 @@
 //   cremer-recipes/{id}  one document per recipe (removed ones are kept, marked removed)
 //   cremer-history/{id}  one document per change made in Manage, never changed
 //   cremer/meta          when the recipes last changed (stamped with every change)
-//   cremer/access        allowedIps: the plant's addresses (Firebase console only)
+//   jde-sched-access/network  LineUp's allowed networks, read by the function
 // The Firestore rules in README.md enforce all of this, whatever the page does.
 const CloudSync = (() => {
   // Public by design: access is governed by the Firestore security rules.

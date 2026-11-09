@@ -115,10 +115,12 @@ service cloud.firestore {
         && request.resource.data.at == request.time;
       allow update, delete: if false;
     }
-    // Cremer Recipes (LineUpCremerRecipes), with the Packaging Lead Hub
-    // accounts: MLT and up read the recipes and their update history; Lead and
-    // up add, change, remove (marked removed, never deleted) and restore them.
-    // Every write is stamped with the account and the server time.
+    // Cremer Recipes (LineUpCremerRecipes). Devices on the plant network get
+    // the recipes from the cremerRecipes function (which checks their IP
+    // address against cremer/access), with no sign-in. Signed in with a
+    // Packaging Lead Hub account, MLT and up read them here from anywhere;
+    // Lead and up add, change, remove (marked removed, never deleted) and
+    // restore them. Every write is stamped with the account and server time.
     function cremerReader() {
       return isOwner() || (signedIn() && myRole() in ['mlt', 'lead', 'admin']);
     }
@@ -159,6 +161,18 @@ service cloud.firestore {
         && request.resource.data.fields is list && request.resource.data.fields.size() <= 60
         && cremerStamped(request.resource.data);
       allow update, delete: if false;
+    }
+    // When the recipes last changed: stamped with every change, so the
+    // function knows when to read them again.
+    match /cremer/meta {
+      allow read: if cremerReader();
+      allow write: if isLead()
+        && request.resource.data.keys().hasOnly(['at', 'by'])
+        && cremerStamped(request.resource.data);
+    }
+    // The plant's IP addresses (allowedIps): Firebase console only.
+    match /cremer/access {
+      allow read, write: if false;
     }
   }
 }

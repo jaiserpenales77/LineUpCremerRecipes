@@ -4,3 +4,4 @@ node_modules/
 # The recipe data must never be published from this public repository.
 cremer-recipes*.html
 *.recipes.json
+functions/node_modules/

@@ -5,22 +5,19 @@ web app: **https://jaiserpenales77.github.io/LineUpCremerRecipes/**
 
 It is the `cremer-recipes.html` app that was shared in Teams, with these changes:
 
-- **No sign-in on the plant network.** Devices whose public IP address is on
-  the plant's list open the recipes straight away. Anywhere else the app shows
-  "Only on the plant network". The check runs on the server (the
-  `cremerRecipes` Cloud Function), not in the page, so it can't be bypassed by
-  copying the page. It uses the same list of allowed networks as LineUp.
+- **Two passwords of its own, Mech and Super**, separate from every other app.
+  The app opens locked; pick **Mech** or **Super** and type its password.
+- **Only from approved networks.** LineUp's sign-in check refuses both logins
+  from networks that aren't on LineUp's list (the company's, and Owners' homes
+  allowed from the Hub), even with the right password.
 - **The recipes live in the database, not in the file.** They are in Firebase
-  Firestore (project `jde-schedule-database`, shared with Packaging Lead Hub and
-  JDE Sched). This repository is public, so it holds only the app; the recipe
+  Firestore (project `jde-schedule-database`, shared with LineUp and Packaging
+  Lead Hub). This repository is public, so it holds only the app; the recipe
   data never goes in it (`.gitignore` blocks `cremer-recipes*.html`).
-- **Manage needs a sign-in** with a Packaging Lead Hub account (Lead, Admin or
-  Owner), instead of the old password.
-- **Changes reach everyone.** Edits, new recipes, removals and restores in
-  Manage save straight to the database. Signed-in screens update within a
-  second; screens on the plant network without a sign-in pick them up within a
-  minute (and whenever the app is brought back into view). The update history
-  shows who made each change. There is no "Download updated file" step any more.
+- **Changes reach everyone live.** Edits, new recipes, removals and restores
+  in Manage save straight to the database, and every open screen updates
+  within a second. The update history shows each change. There is no
+  "Download updated file" step any more.
 
 Everything else is the same: search, line and size filters, the recipe window,
 Copy, Print, "Have better settings?" sheets, the update history panel, light
@@ -28,109 +25,77 @@ and dark theme.
 
 ## Who can do what
 
-| Who | Cremer Recipes |
-|---|---|
-| **Anyone on the plant network** (no sign-in) | Look up, copy and print recipes; print suggestion sheets. |
-| **Off the plant network**, not signed in | Nothing: "Only on the plant network". |
-| **PLT** account (every new Packaging Lead Hub account) | Nothing extra; off-site it sees "No access off-site". |
-| **MLT** account, signed in | Look up recipes from anywhere, with live updates. |
-| **Lead**, **Admin**, **Owner**, signed in | All of that, plus **Manage**: add, edit, remove, restore and import recipes. |
+| Login | Firebase account | Can |
+|---|---|---|
+| **Mech** | `cremer-mech@jde-sched.local` | Look up, copy and print recipes; print suggestion sheets. |
+| **Super** | `cremer-super@jde-sched.local` | All of that, plus **Manage**: add, edit, remove, restore and import recipes. |
 
-Sign in on the **Manage** tab (or on the off-site screen); sign out with the
-initial in the top bar. Account types are changed in Packaging Lead Hub's Admin
-tab; Owners are the `owners` list in the `pk030/admins` document. The Firestore
-rules below and the function enforce all of this, whatever the page does.
+No other account opens Cremer Recipes: not LineUp's shift accounts, not
+Packaging Lead Hub accounts. And the two Cremer logins can't open anything in
+the other apps. The Firestore rules below enforce this, whatever the page does.
 
-## How the plant-network check works
+Like LineUp, an unlocked computer stays unlocked until the app is closed, or
+for **12 hours** with **Remember this computer for 12 hours**. The initial in
+the top bar (M or S) shows who is unlocked; clicking it **locks** the app and
+clears the downloaded recipes from that computer. Changes made with Super show
+as "by Super" in the history; the two logins are shared, so the history can't
+tell which supervisor it was.
 
-`functions/index.js` is an HTTPS Cloud Function, `cremerRecipes`
-(`https://us-central1-jde-schedule-database.cloudfunctions.net/cremerRecipes`).
-The app asks it for the recipes. It looks at the address the request came from
-and answers only if that address is on **LineUp's list of allowed networks**,
-the Firestore document `jde-sched-access/network` (set up in the LineUp App
-session; see `docs/NETWORK_ACCESS_PLAN.md` in the JDE-Sched repository).
-Everyone else gets 403, and the database itself refuses to hand the recipes to
-anyone who isn't signed in.
+## How the network check works
 
-- **One list for both apps:** the `allowed` addresses (the company's, set in
-  the Firebase console) and the home networks Owners allow for 30 days with
-  the Hub's **Admin → LineUp: Network Access → Allow LineUp from this
-  network** button (`temporary`, until their end date). Adding a network for
-  LineUp adds it for Cremer Recipes too.
-- **LineUp's `enabled` switch doesn't apply here.** With it off, LineUp still
-  has its shift passwords, but Cremer Recipes would be open to anyone, so
-  Cremer always checks the list. An empty or missing list lets nobody in
-  without signing in.
-- Addresses can be single (`203.0.113.7`) or ranges (`203.0.113.0/24`), IPv4 or
-  IPv6 (`2001:db8:1234::/48`). The list is read again every 30 seconds, so
-  changes need no redeploy.
-- Opening the function's address with `?ip` at the end shows the address it
-  sees for that device.
-- Only the address added by Google's own front end is trusted, so a device
-  can't pretend to be on the plant network by sending a made-up header.
-- It only works on devices using an allowed connection: phones on mobile data
-  are "off-site". Owners: only press the Hub's button on home Wi-Fi, never on
-  mobile data (a mobile carrier's address is shared with strangers).
-- To keep database reads low, the function re-reads the recipes only when
-  `cremer/meta` (stamped by every change in Manage) says something changed.
-  Normal use stays inside Firestore's free daily allowance. Cloud Functions
-  needs the Blaze plan; at this app's traffic it should cost nothing, and a
-  budget alert in Google Cloud billing is a good safety net.
+The two Cremer accounts are `@jde-sched.local` accounts, and LineUp's sign-in
+check, the `allowedNetworksOnly` function in the JDE-Sched repository (see its
+`docs/NETWORK_ACCESS_PLAN.md`), checks every `@jde-sched.local` sign-in. When
+it is turned on, a sign-in from a network that isn't on LineUp's list
+(`jde-sched-access/network`) is refused, whatever the password, and the lock
+screen says: "Access restricted. Cremer Recipes can only be used on approved
+company networks. This device's network (…) is not approved. For access,
+please contact the LineUp administrator."
+
+- **One list for both apps:** the company address in `allowed`, and the home
+  networks Owners allow for 30 days with the Hub's **Admin → LineUp: Network
+  Access → Allow LineUp from this network** button.
+- **It follows LineUp's `enabled` switch.** While it is off (as during
+  LineUp's setup), the passwords work from anywhere; once it is on, both apps
+  are network-locked.
+- **It checks the moment of unlocking.** A computer that is already unlocked
+  keeps working until it locks (when the app is closed, or after 12 hours if
+  remembered).
+- Cremer Recipes needs no function of its own: LineUp's setup (Identity
+  Platform and its Cloud Shell deploy) covers it.
 
 ## One-time setup
 
-1. **Turn on GitHub Pages:** repository **Settings → Pages → Build and
-   deployment → Source: GitHub Actions**, then re-run the "Deploy static site
-   to GitHub Pages" workflow in the **Actions** tab. After that, every push to
-   `claude/practical-pascal-31ea52` publishes the site.
+1. **GitHub Pages** (done): repository **Settings → Pages → Source: GitHub
+   Actions**. Every push to `claude/practical-pascal-31ea52` publishes the site.
 2. **Publish the Firestore rules:** Firebase console, project
    `jde-schedule-database` → **Firestore Database → Rules** → replace them with
    the contents of [`firestore.rules`](firestore.rules) (also below) →
-   **Publish**. That file is the full rule set: the JDE Sched and Packaging Lead
-   Hub rules combined (the JDE-Sched repository's `firestore.rules` and the
-   AutoCoordinator README each hold only part of what is published now), plus
-   the Cremer Recipes section. **Paste this file, not the copy from JDE-Sched or
-   the AutoCoordinator README**, or the other apps' newest rules or Cremer's
-   would be dropped. Whenever the rules change in any of the three apps, give
-   that change to all three copies.
-3. **Deploy the function** (needs the Blaze plan). The easiest way is Google
-   Cloud Shell, which runs in the browser with nothing to install: open
-   https://shell.cloud.google.com, signed in with the Google account that owns
-   the Firebase project, and run:
+   **Publish**. That file is the full rule set: the JDE Sched (LineUp) and
+   Packaging Lead Hub rules combined (the JDE-Sched repository's
+   `firestore.rules` and the AutoCoordinator README each hold only part of
+   what is published now), plus the Cremer Recipes section. **Paste this file,
+   not the copy from JDE-Sched or the AutoCoordinator README**, or the other
+   apps' newest rules or Cremer's would be dropped. Whenever the rules change
+   in any of the three apps, give that change to all three copies.
+3. **Create the two logins:** Firebase console → **Authentication → Users →
+   Add user**:
+   - email `cremer-mech@jde-sched.local`, with the Mech password;
+   - email `cremer-super@jde-sched.local`, with the Super password.
 
-   ```bash
-   git clone -b claude/practical-pascal-31ea52 https://github.com/jaiserpenales77/LineUpCremerRecipes.git
-   cd LineUpCremerRecipes/functions && npm ci && cd ..
-   npx firebase-tools@latest deploy --only functions --project jde-schedule-database
-   ```
-
-   If it asks you to log in, run `npx firebase-tools@latest login --no-localhost`
-   and follow the link, then run the deploy line again. The first deploy can
-   take a few minutes, turns on the Google Cloud services functions need, and
-   may ask about a cleanup policy for old builds (accept the default). The
-   functions are in their own codebase (`cremer-recipes`), so deploying never
-   touches other functions in the project, such as LineUp's
-   `allowedNetworksOnly` and `lineupNetwork` (JDE-Sched's `default` codebase),
-   and deploying those never touches this one. Deploy again whenever
-   `functions/` changes.
-4. **The allowed networks:** nothing extra to do. Cremer Recipes uses
-   LineUp's list (`jde-sched-access/network`), which already has the company
-   address in `allowed`. If that document doesn't exist yet, create it as
-   LineUp's `docs/NETWORK_ACCESS_PLAN.md` describes (collection
-   `jde-sched-access`, document `network`, array `allowed`). For home, an
-   Owner presses the Hub's **Allow LineUp from this network** button on home
-   Wi-Fi once LineUp's update is live. To check a device, open
-   https://us-central1-jde-schedule-database.cloudfunctions.net/cremerRecipes?ip
-   on it.
-5. **Sign-in domain:** `jaiserpenales77.github.io` must be in **Authentication
-   → Settings → Authorized domains**. It is already there if Packaging Lead
-   Hub signs in from GitHub Pages.
-6. **Load the recipes once:** open the app, go to **Manage**, sign in as a
-   Lead, Admin or Owner → **Import recipe file** → choose `cremer-recipes.html`
-   (the file from Teams). It adds the recipes the database doesn't have yet and
-   never changes stored ones, so importing again is safe. If someone has unsaved
-   Manage changes in that file on their own computer, have them tap **Download
-   updated file** there first and import that file instead.
+   Passwords need at least 6 characters. To change one later, delete that
+   user and add it again with the new password (the console's "Reset
+   password" sends an email, which can't reach a `.local` address).
+   Computers unlocked with the old password lock within about an hour.
+4. **Network check:** part of LineUp's setup (its `docs/NETWORK_ACCESS_PLAN.md`):
+   upgrade to Identity Platform, deploy its functions from Cloud Shell, then
+   turn `enabled` on. Nothing extra for Cremer Recipes.
+5. **Load the recipes once:** open the app, unlock as **Super** → **Manage** →
+   **Import recipe file** → choose `cremer-recipes.html` (the file from Teams).
+   It adds the recipes the database doesn't have yet and never changes stored
+   ones, so importing again is safe. If someone has unsaved Manage changes in
+   that file on their own computer, have them tap **Download updated file**
+   there first and import that file instead.
 
 ## Database layout
 
@@ -138,22 +103,16 @@ anyone who isn't signed in.
   fields (`fg`, `bulk`, `line`, `size`, `sheet`, `id` and the settings), plus
   `fromGuide` (it came from an imported file), `edited`, `removed` (removed
   recipes are kept so they can be restored), `at` (server time of the last
-  change) and `by` (username). The id of an imported recipe is its
+  change) and `by` (`cremer-super`). The id of an imported recipe is its
   `line|sheet`, URL-encoded, so a second import can't duplicate it; recipes
   added in Manage get `new-…` ids. Nobody can delete a document.
 - `cremer-history/{id}`: one entry per change (`added`, `edited`, `removed`,
   `restored`, `imported`), stamped with the account and server time; entries
-  are never changed or deleted. Signed-in screens show the newest 500, the
-  plant-network screens the newest 200.
-- `cremer/meta`: `at` and `by` of the latest change, written with every change.
-- `jde-sched-access/network`: LineUp's allowed networks, read by the
-  function (see above). No app can read or change it.
+  are never changed or deleted. The app shows the newest 500.
 
-Signed-in screens keep an offline copy (Firestore's IndexedDB cache): if the
-network drops they keep showing the last recipes, and changes made offline are
-sent when it comes back. **Sign out** clears that copy from the computer.
-Plant-network screens keep the last recipes they fetched while the page stays
-open, and say "Offline" until the connection returns.
+An unlocked computer keeps an offline copy (Firestore's IndexedDB cache): if
+the network drops it keeps showing the last recipes, and changes made offline
+are sent when it comes back. **Lock** clears that copy from the computer.
 
 ## Firestore rules
 
@@ -294,18 +253,24 @@ service cloud.firestore {
         && request.resource.data.at == request.time;
       allow update, delete: if false;
     }
-    // Cremer Recipes (LineUpCremerRecipes). Devices on the plant network get
-    // the recipes from the cremerRecipes function (which checks their IP
-    // address against LineUp's list, jde-sched-access/network), with no
-    // sign-in. Signed in with a
-    // Packaging Lead Hub account, MLT and up read them here from anywhere;
-    // Lead and up add, change, remove (marked removed, never deleted) and
-    // restore them. Every write is stamped with the account and server time.
-    function cremerReader() {
-      return isOwner() || (signedIn() && myRole() in ['mlt', 'lead', 'admin']);
+    // Cremer Recipes (LineUpCremerRecipes). Two shared logins of its own,
+    // made in the Firebase console: Mech (cremer-mech@jde-sched.local) reads
+    // the recipes and their update history; Super
+    // (cremer-super@jde-sched.local) also adds, changes, removes (marked
+    // removed, never deleted) and restores them. No other account - LineUp's
+    // shift accounts, Packaging Lead Hub accounts - gets any of it, and these
+    // two get nothing else. Being @jde-sched.local accounts, LineUp's sign-in
+    // check only lets them sign in from its allowed networks. Every write is
+    // stamped with the account and the server time.
+    function cremerAccount() {
+      return request.auth != null
+        && request.auth.token.email in ['cremer-mech@jde-sched.local', 'cremer-super@jde-sched.local'];
+    }
+    function cremerSuper() {
+      return request.auth != null && request.auth.token.email == 'cremer-super@jde-sched.local';
     }
     function cremerStamped(d) {
-      return d.by == username() && d.at == request.time;
+      return d.by == request.auth.token.email.split('@')[0] && d.at == request.time;
     }
     function cremerRecipeOk() {
       let d = request.resource.data;
@@ -328,13 +293,13 @@ service cloud.firestore {
         && cremerStamped(d);
     }
     match /cremer-recipes/{id} {
-      allow read: if cremerReader();
-      allow create, update: if isLead() && cremerRecipeOk();
+      allow read: if cremerAccount();
+      allow create, update: if cremerSuper() && cremerRecipeOk();
       allow delete: if false;
     }
     match /cremer-history/{id} {
-      allow read: if cremerReader();
-      allow create: if isLead()
+      allow read: if cremerAccount();
+      allow create: if cremerSuper()
         && request.resource.data.keys().hasOnly(['action', 'k', 'fg', 'bulk', 'line', 'size', 'fields', 'uid', 'at', 'by'])
         && request.resource.data.action in ['added', 'edited', 'removed', 'restored', 'imported']
         && request.resource.data.uid == request.auth.uid
@@ -342,40 +307,29 @@ service cloud.firestore {
         && cremerStamped(request.resource.data);
       allow update, delete: if false;
     }
-    // When the recipes last changed: stamped with every change, so the
-    // function knows when to read them again.
-    match /cremer/meta {
-      allow read: if cremerReader();
-      allow write: if isLead()
-        && request.resource.data.keys().hasOnly(['at', 'by'])
-        && cremerStamped(request.resource.data);
-    }
   }
 }
 ```
 
 ## Files
 
-- `index.html`: the app (layout, styles, search, recipe window, printing,
-  Manage, history). The setting names are built in; the recipes are not.
-- `cremer-sync.js`: getting the recipes (from the function, or from Firestore
-  when signed in), sign-in and saving changes.
-- `functions/`: the `cremerRecipes` Cloud Function (`index.js`) and its IP
-  address check (`ip.js`, tested by `ip.test.js`: `npm test` in `functions/`).
+- `index.html`: the app (lock screen, layout, styles, search, recipe window,
+  printing, Manage, history). The setting names are built in; the recipes are
+  not.
+- `cremer-sync.js`: unlocking (Mech/Super, remember for 12 hours, LineUp's
+  network message), live sync with Firestore and saving changes.
 - `assets/vendor/firebase/`: the Firebase JS SDK 12.19.0 (same copy as
   Packaging Lead Hub), served from this site.
-- `firestore.rules`, `firebase.json`: the rules, the function's deploy settings
-  and the emulator settings.
+- `firestore.rules`, `firebase.json`: the rules and the emulator settings.
 - `.github/workflows/deploy-pages.yml`: publishes the site to GitHub Pages.
 
 ## Testing without touching the real database
 
-Install the function's packages (`npm ci` in `functions/`), start the Firebase
-emulators (needs Java) with
-`npx firebase-tools emulators:start --only auth,firestore,functions --project jde-schedule-database`,
+Start the Firebase emulators (needs Java) with
+`npx firebase-tools emulators:start --only auth,firestore --project jde-schedule-database`,
 serve the folder (`python3 -m http.server 8000`), and open
-`http://localhost:8000/?emulator=9099,8080,5001`. The `emulator` parameter is
+`http://localhost:8000/?emulator=9099,8080`. The `emulator` parameter is
 ignored anywhere except `localhost`, so the live site always uses the real
-database and function. In the emulator the function treats every caller as
-`127.0.0.1`; put that in `allowed` of `jde-sched-access/network` (in the
-emulator) to test the plant-network view.
+project. To test the network check too, run LineUp's `functions/` (from the
+JDE-Sched repository) in the same emulators (`--only auth,firestore,functions`)
+and set `jde-sched-access/network` in the emulator.

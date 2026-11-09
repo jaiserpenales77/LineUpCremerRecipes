@@ -134,18 +134,24 @@ service cloud.firestore {
         && request.resource.data.at == request.time;
       allow update, delete: if false;
     }
-    // Cremer Recipes (LineUpCremerRecipes). Devices on the plant network get
-    // the recipes from the cremerRecipes function (which checks their IP
-    // address against LineUp's list, jde-sched-access/network), with no
-    // sign-in. Signed in with a
-    // Packaging Lead Hub account, MLT and up read them here from anywhere;
-    // Lead and up add, change, remove (marked removed, never deleted) and
-    // restore them. Every write is stamped with the account and server time.
-    function cremerReader() {
-      return isOwner() || (signedIn() && myRole() in ['mlt', 'lead', 'admin']);
+    // Cremer Recipes (LineUpCremerRecipes). Two shared logins of its own,
+    // made in the Firebase console: Mech (cremer-mech@jde-sched.local) reads
+    // the recipes and their update history; Super
+    // (cremer-super@jde-sched.local) also adds, changes, removes (marked
+    // removed, never deleted) and restores them. No other account - LineUp's
+    // shift accounts, Packaging Lead Hub accounts - gets any of it, and these
+    // two get nothing else. Being @jde-sched.local accounts, LineUp's sign-in
+    // check only lets them sign in from its allowed networks. Every write is
+    // stamped with the account and the server time.
+    function cremerAccount() {
+      return request.auth != null
+        && request.auth.token.email in ['cremer-mech@jde-sched.local', 'cremer-super@jde-sched.local'];
+    }
+    function cremerSuper() {
+      return request.auth != null && request.auth.token.email == 'cremer-super@jde-sched.local';
     }
     function cremerStamped(d) {
-      return d.by == username() && d.at == request.time;
+      return d.by == request.auth.token.email.split('@')[0] && d.at == request.time;
     }
     function cremerRecipeOk() {
       let d = request.resource.data;
@@ -168,27 +174,19 @@ service cloud.firestore {
         && cremerStamped(d);
     }
     match /cremer-recipes/{id} {
-      allow read: if cremerReader();
-      allow create, update: if isLead() && cremerRecipeOk();
+      allow read: if cremerAccount();
+      allow create, update: if cremerSuper() && cremerRecipeOk();
       allow delete: if false;
     }
     match /cremer-history/{id} {
-      allow read: if cremerReader();
-      allow create: if isLead()
+      allow read: if cremerAccount();
+      allow create: if cremerSuper()
         && request.resource.data.keys().hasOnly(['action', 'k', 'fg', 'bulk', 'line', 'size', 'fields', 'uid', 'at', 'by'])
         && request.resource.data.action in ['added', 'edited', 'removed', 'restored', 'imported']
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.fields is list && request.resource.data.fields.size() <= 60
         && cremerStamped(request.resource.data);
       allow update, delete: if false;
-    }
-    // When the recipes last changed: stamped with every change, so the
-    // function knows when to read them again.
-    match /cremer/meta {
-      allow read: if cremerReader();
-      allow write: if isLead()
-        && request.resource.data.keys().hasOnly(['at', 'by'])
-        && cremerStamped(request.resource.data);
     }
   }
 }

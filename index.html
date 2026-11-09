@@ -762,6 +762,13 @@ select.vin{text-align:left;padding-right:4px}
 .acct span{font-weight:800;font-size:14px;line-height:1}
 .lock-form.col{flex-direction:column}.lock-form.col .btn.grow{flex:1 1 auto}
 #viewAuth .lock-wrap{min-height:52vh}
+.role-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
+.role-pick button{display:flex;flex-direction:column;gap:3px;align-items:center;padding:12px 10px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font:inherit}
+.role-pick button b{font-size:16px}.role-pick button small{color:var(--ink3);font-size:12px;line-height:1.3}
+.role-pick button.on{border-color:var(--g1);background:color-mix(in srgb,var(--g1) 10%,var(--card));box-shadow:0 0 0 3px color-mix(in srgb,var(--g1) 18%,transparent)}
+.role-pick button:focus-visible{outline:2px solid var(--g1);outline-offset:2px}
+.remember{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink2);text-align:left;cursor:pointer;padding:2px 2px 4px}
+.remember input{width:17px;height:17px;accent-color:var(--g1)}
 .gate-or{margin:18px 0 10px!important;font-size:13.5px!important}
 .gated{--side-now:0px}
 </style>
@@ -844,7 +851,7 @@ select.vin{text-align:left;padding-right:4px}
   <div class="g-head"><h2 id="guideTitle">How to use</h2><button class="iconbtn g-x" id="guideX" type="button" aria-label="Close">✕</button></div>
   <ol class="g-list"><li><span class="g-ico" aria-hidden="true">🔎</span><div><b class="g-t">1. Find a recipe</b><p>Type the FG or bulk number in the search box, e.g. <b>2684</b> or <b>A641</b>. Or tap a line or bottle size to narrow the list.</p></div></li><li><span class="g-ico" aria-hidden="true">👆</span><div><b class="g-t">2. Open it</b><p>Tap a recipe card. The four big numbers at the top are the main settings; everything else is below.</p></div></li><li><span class="g-ico" aria-hidden="true">🖨️</span><div><b class="g-t">3. Print it</b><p>Tap <b>Print</b> for a one-page sheet. For colour, turn on <b>Background graphics</b> in the print settings. <b>In Teams or SharePoint?</b> Printing is blocked there — <b>download the file and open it</b>, then print.</p></div></li><li><span class="g-ico" aria-hidden="true">💡</span><div><b class="g-t">4. Have better settings?</b><p>Tap <b>Have better settings?</b>, change the numbers, add your name and shift, tap <b>Print</b> and give the sheet to your supervisor. Don’t change the machine until it’s approved.</p></div></li><li><span class="g-ico" aria-hidden="true">🕘</span><div><b class="g-t">5. What changed?</b><p>The <b>History</b> tab on the right edge shows which recipes changed and when. Tap it to open or close.</p></div></li></ol>
   <div class="g-sup">Supervisors only</div>
-  <ol class="g-list" start="6"><li><span class="g-ico" aria-hidden="true">🔒</span><div><b class="g-t">6. Manage</b><p>Leads, Admins and Owners: tap <b>Manage</b> and sign in with your Packaging Lead Hub account to <b>Edit</b>, add (<b>+ New recipe</b>) or <b>Remove</b> recipes. Changes save for everyone straight away and show in the update history with your username.</p></div></li></ol>
+  <ol class="g-list" start="6"><li><span class="g-ico" aria-hidden="true">🔒</span><div><b class="g-t">6. Manage</b><p>Unlocked with the <b>Super</b> password, the <b>Manage</b> tab lets you <b>Edit</b>, add (<b>+ New recipe</b>) or <b>Remove</b> recipes. Changes save for everyone straight away and show in the update history.</p></div></li></ol>
   <div class="g-tip">✅ Always check the settings on the machine before running.</div>
   <div class="pw-acts"><button class="btn primary grow" id="guideOk" type="button">Got it</button></div>
 </div></div>
@@ -976,7 +983,7 @@ $('#theme').onclick = () => {
 /* ---- recipes: live from the database (cremer-sync.js), shared by everyone ---- */
 const GUIDE_DATE = '2026-10-06';   // the Cremer Recipe Guides are dated 10.06.26
 const fmtDay = iso => new Date(String(iso).length===10 ? iso+'T12:00:00' : iso).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
-const cloud = { recipes:[], history:[], loaded:false, access:null, checking:null };
+const cloud = { recipes:[], history:[], loaded:false, role:null, until:0 };
 const allHistory = () => cloud.history;
 const guideCount = () => cloud.recipes.filter(r=>r.fromGuide).length;
 const RECORD_KEYS = ['id','fg','bulk','line','size','sheet',...FIELDS.map(f=>f.key)];
@@ -993,10 +1000,11 @@ const linesInUse = () => [...new Set([9,10,...R.map(r=>+r.line)])].sort((a,b)=>a
 const sourceOf = r => r.status==='new' ? 'Added in Manage' : `Cremer Recipe Guide Line ${esc(r.line)} (10.06.26) · sheet “${esc(r.sheet)}”`+(r.status==='edited'?' · edited in Manage':'');
 function refreshAll(){ buildRecipes(); renderFilters(); render(); renderHistory(); if(state.tab==='manage') renderManage(); }
 
-/* ---- access: no sign-in on the plant network (the cremerRecipes function checks the IP address).
-   Signing in with a Packaging Lead Hub account: MLT and up read the recipes anywhere; Lead and up use Manage. ---- */
-const canEdit = () => !!(cloud.access && cloud.access.canEdit);
-const ROLE_NAME = {plt:'PLT', mlt:'MLT', lead:'Lead', admin:'Admin', owner:'Owner'};
+/* ---- access: Cremer's own two logins. Mech looks up recipes; Super also uses Manage.
+   LineUp's sign-in check refuses both from networks that aren't on LineUp's list. ---- */
+const canEdit = () => cloud.role === 'super';
+const ROLE_NAME = {mech:'Mech', super:'Super'};
+const byName = by => ({'cremer-super':'Super','cremer-mech':'Mech'})[by] || by || '?';
 let appOpen = false;
 function gate(html){
   const g=$('#viewAuth'); g.innerHTML = `<div class="lock-wrap"><div class="lock-card">${html}</div></div>`; g.hidden=false;
@@ -1004,57 +1012,43 @@ function gate(html){
   document.documentElement.classList.add('gated');
 }
 function openApp(){
-  if (appOpen) return; appOpen=true;
+  $('.tabs [data-tab="manage"]').hidden = !canEdit();
+  if (state.tab==='manage' && !canEdit()) state.tab='recipes';
+  if (appOpen){ setTab(state.tab); return; }
+  appOpen=true;
   $('#viewAuth').hidden=true; $('#viewAuth').innerHTML=''; document.documentElement.classList.remove('gated'); $('#hist').hidden=false; $('.tabs').hidden=false;
   setTab(state.tab);
   peekHist();
 }
-/* the sign-in form, used on the Manage tab and on the off-site screen */
-function signInForm(){
-  return `<form class="lock-form col sign-form" autocomplete="on">
-      <input class="inp su-user" placeholder="Username" aria-label="Username" autocomplete="username" autocapitalize="none" spellcheck="false">
-      <input class="inp su-pw" type="password" placeholder="Password" aria-label="Password" autocomplete="current-password">
-      <button class="btn primary grow su-btn" type="submit">Sign in</button>
+let lockRole = 'mech';
+function gateLock(){
+  gate(`<div class="lock-ico">🔒</div>
+    <h2>Cremer Recipes is locked</h2>
+    <p>Choose your login and enter its password.</p>
+    <div class="role-pick" role="radiogroup" aria-label="Login">
+      <button type="button" role="radio" data-role="mech"><b>Mech</b><small>Look up and print recipes</small></button>
+      <button type="button" role="radio" data-role="super"><b>Super</b><small>Also edit recipes in Manage</small></button>
+    </div>
+    <form id="unlockForm" class="lock-form col" autocomplete="off">
+      <input class="inp" id="ulPw" type="password" placeholder="Password" aria-label="Password" autocomplete="current-password">
+      <label class="remember"><input type="checkbox" id="ulRem"> Remember this computer for 12 hours</label>
+      <button class="btn primary grow" id="ulBtn" type="submit">Unlock</button>
     </form>
-    <div class="lock-err su-err" hidden></div>`;
-}
-function bindSignIn(root){
-  const q=s=>root.querySelector(s), btn=q('.su-btn'), er=q('.su-err');
-  onSubmitLike(q('.sign-form'), btn, async () => {
+    <div class="lock-err" id="ulErr" hidden></div>
+    <div class="lock-note">Without “Remember”, it locks again when the app is closed. Only works on approved company networks.</div>`);
+  const pick = r => { lockRole=r; document.querySelectorAll('.role-pick [data-role]').forEach(b=>{ const on=b.dataset.role===r; b.classList.toggle('on',on); b.setAttribute('aria-checked',String(on)); }); };
+  pick(lockRole);
+  document.querySelectorAll('.role-pick [data-role]').forEach(b=>b.onclick=()=>{ pick(b.dataset.role); $('#ulPw').focus(); });
+  const btn=$('#ulBtn'), er=$('#ulErr');
+  onSubmitLike($('#unlockForm'), btn, async () => {
     if (btn.disabled) return; er.hidden=true;
-    const u=q('.su-user').value.trim(), pw=q('.su-pw').value;
-    if (!u || !pw){ er.hidden=false; er.textContent='Enter your username and password.'; return; }
-    btn.disabled=true; btn.textContent='Signing in…';
-    try{ await CloudSync.signIn(u, pw); }
-    catch(e){ if(!btn.isConnected) return; er.hidden=false; er.textContent=e.message; btn.disabled=false; btn.textContent='Sign in'; q('.su-pw').select(); }
+    const pw=$('#ulPw').value;
+    if (!pw){ er.hidden=false; er.textContent='Enter the password.'; return; }
+    btn.disabled=true; btn.textContent='Unlocking…';
+    try{ await CloudSync.unlock(lockRole, pw, $('#ulRem').checked); }
+    catch(e){ if(!btn.isConnected) return; er.hidden=false; er.textContent=e.message; btn.disabled=false; btn.textContent='Unlock'; $('#ulPw').select(); }
   });
-  setTimeout(()=>{ const u=q('.su-user'); if(u) u.focus({preventScroll:true}); },60);
-}
-function gateOffsite(ip){
-  gate(`<div class="lock-ico">🏭</div>
-    <h2>Only on the plant network</h2>
-    <p>Cremer Recipes opens without signing in on the plant’s network. This device isn’t on it${ip?` (its address is <b>${esc(ip)}</b>)`:''}.</p>
-    <p>MLTs, Leads, Admins and Owners can sign in with their <b>Packaging Lead Hub</b> account to use it from anywhere:</p>
-    ${signInForm()}`);
-  bindSignIn($('#viewAuth'));
-}
-function gateUnreachable(){
-  gate(`<div class="lock-ico">📡</div>
-    <h2>Can’t reach Cremer Recipes</h2>
-    <p>The recipe service didn’t answer. Check the connection, then try again.</p>
-    <div class="pw-acts"><button class="btn primary grow" id="gReload" type="button">Try again</button></div>
-    <p class="gate-or">MLTs, Leads, Admins and Owners can also sign in with their <b>Packaging Lead Hub</b> account:</p>
-    ${signInForm()}`);
-  $('#gReload').onclick=()=>location.reload();
-  bindSignIn($('#viewAuth'));
-}
-function gateNoAccess(a){
-  gate(`<div class="lock-ico">🚫</div>
-    <h2>No access off-site</h2>
-    <p>You’re signed in as <b>${esc(a.username)}</b>${a.role&&a.role!=='none'?` (${esc(ROLE_NAME[a.role]||a.role)})`:''}. Off the plant network, Cremer Recipes opens for <b>MLT, Lead, Admin and Owner</b> accounts.</p>
-    <p>Use it from a device on the plant network, or ask an Admin to change your account type in Packaging Lead Hub.</p>
-    <div class="pw-acts"><button class="btn" id="gOut" type="button">Sign out</button><button class="btn primary grow" id="gReload" type="button">Reload</button></div>`);
-  $('#gOut').onclick=()=>CloudSync.signOut(); $('#gReload').onclick=()=>location.reload();
+  setTimeout(()=>{ const p=$('#ulPw'); if(p) p.focus({preventScroll:true}); },60);
 }
 function gateMessage(ico, title, msg, retry){
   gate(`<div class="lock-ico">${ico}</div><h2>${esc(title)}</h2><p>${esc(msg)}</p>${retry?`<div class="pw-acts"><button class="btn primary grow" id="gReload" type="button">Try again</button></div>`:''}`);
@@ -1065,10 +1059,11 @@ function setSync(s){
   el.className='sync '+s.state; el.textContent=s.text; el.hidden=false;
 }
 $('#acct').onclick = async () => {
-  const a=cloud.access; if(!a) return;
+  if (!cloud.role) return;
   const pending = CloudSync.hasPendingWrites();
-  const msg = `Signed in as ${a.username}${ROLE_NAME[a.role]?' ('+ROLE_NAME[a.role]+')':''}.\nSign out of Cremer Recipes on this computer?` + (pending?'\n\n⚠️ Some changes haven’t reached the database yet. Signing out now loses them.':'');
-  if (await askConfirm(msg, 'Sign out', pending)) CloudSync.signOut();
+  const until = cloud.until ? `\nThis computer is remembered until ${new Date(cloud.until).toLocaleString([], {weekday:'short', hour:'numeric', minute:'2-digit'})}.` : '';
+  const msg = `Unlocked as ${ROLE_NAME[cloud.role]}.${until}\nLock Cremer Recipes on this computer?` + (pending?'\n\n⚠️ Some changes haven’t reached the database yet. Locking now loses them.':'');
+  if (await askConfirm(msg, 'Lock', pending)) CloudSync.lock();
 };
 
 /* filters */
@@ -1101,7 +1096,7 @@ function render(){
   else list.sort((a,b)=>a.order-b.order);
   $('#count').innerHTML = list.length===R.length ? `<b>${R.length}</b> recipes` : `<b>${list.length}</b> of ${R.length} recipes`;
   if (!cloud.loaded){ $('#count').innerHTML=''; $('#results').innerHTML=`<div class="grid"><div class="empty"><span class="e">⏳</span><b>Loading recipes…</b></div></div>`; return; }
-  if (!R.length){ $('#count').innerHTML=''; $('#results').innerHTML=`<div class="grid"><div class="empty"><span class="e">📭</span><b>No recipes in the database yet.</b><br>${canEdit()?'Import them in <b>Manage</b> → <b>Import recipe file</b>.':'A Lead or Admin can import them in Manage.'}</div></div>`; return; }
+  if (!R.length){ $('#count').innerHTML=''; $('#results').innerHTML=`<div class="grid"><div class="empty"><span class="e">📭</span><b>No recipes in the database yet.</b><br>${canEdit()?'Import them in <b>Manage</b> → <b>Import recipe file</b>.':'Unlock as Super to import them in Manage.'}</div></div>`; return; }
   if (!list.length){ $('#results').innerHTML=`<div class="grid"><div class="empty"><span class="e">🔎</span><b>No recipe found.</b><br>Try only the FG number or the bulk code, or choose “All lines”.</div></div>`; return; }
   const shown = list.slice(0,state.limit);
   $('#results').innerHTML = `<div class="grid">${shown.map((r,i)=>`
@@ -1139,7 +1134,7 @@ function open(uid){
     h += `<div class="sec" style="animation-delay:${gi*35}ms"><h3>${esc(g)}</h3><div class="box">${FIELDS.filter(f=>f.group===g).map(f=>`<div class="kv"><span class="k">${esc(f.label)}</span>${html(f.key,r[f.key])}</div>`).join('')}</div></div>`;
   });
   if (others.length) h += `<div class="sec also-sec"><h3>Same FG, other recipe</h3><div class="also">${others.map(x=>`<button class="chip size" data-go="${esc(x.uid)}" style="--c:${col(x)}"><span class="dot"></span>Line ${x.line} · ${x.size}cc${x.bulk!==r.bulk?' · '+esc(x.bulk):''}</button>`).join('')}</div></div>`;
-  h += `<div class="note">Last updated <b>${esc(fmtDay(r.updated))}</b> · workbook sheet “${esc(r.sheet)}”${r.status?` · ${r.status==='new'?'added':'edited'} in Manage${r.by?' by '+esc(r.by):''}`:''}</div>
+  h += `<div class="note">Last updated <b>${esc(fmtDay(r.updated))}</b> · workbook sheet “${esc(r.sheet)}”${r.status?` · ${r.status==='new'?'added':'edited'} in Manage${r.by?' by '+esc(byName(r.by)):''}`:''}</div>
     <div class="p-print-foot print-only"><span>Source: <b>${sourceOf(r)}</b></span><span>Updated ${esc(fmtDay(r.updated))} · Printed ${new Date().toLocaleDateString()} · Confirm settings on the machine</span></div></div>
     <div class="p-foot"><button class="btn" id="pCopy">Copy</button><button class="btn primary grow" id="pBetter">💡 Have better settings?</button><button class="btn" id="pPrint">Print</button></div>`;
   const p = showPanel(r,h); p.classList.add('view');
@@ -1257,20 +1252,7 @@ function download(name, content, type){
 /* Manage tab (Lead and up): edit, add, remove and import recipes. Changes go straight to the database. */
 function renderManage(){
   const v=$('#viewManage');
-  if (cloud.checking){ v.innerHTML=`<div class="lock-wrap"><div class="lock-card"><div class="lock-ico">⏳</div><h2>Checking your access…</h2><p>Signed in as <b>${esc(cloud.checking)}</b>.</p></div></div>`; return; }
-  if (!cloud.access){
-    v.innerHTML=`<div class="lock-wrap"><div class="lock-card"><div class="lock-ico">🔒</div><h2>Sign in to manage recipes</h2>
-      <p>Leads, Admins and Owners: use your <b>Packaging Lead Hub</b> username and password to edit, add or remove recipes.</p>${signInForm()}
-      <div class="lock-note">Looking up and printing recipes needs no sign-in on the plant network.</div></div></div>`;
-    bindSignIn(v); return;
-  }
-  if (!canEdit()){
-    const a=cloud.access;
-    v.innerHTML=`<div class="lock-wrap"><div class="lock-card"><div class="lock-ico">🔒</div><h2>Leads only</h2>
-      <p>You’re signed in as <b>${esc(a.username)}</b>${ROLE_NAME[a.role]?` (${ROLE_NAME[a.role]})`:''}. Only Leads, Admins and Owners can change recipes.</p>
-      <div class="pw-acts"><button class="btn primary grow" id="mOut" type="button">Sign out</button></div></div></div>`;
-    $('#mOut').onclick=()=>CloudSync.signOut(); return;
-  }
+  if (!canEdit()){ v.innerHTML=`<div class="grid"><div class="empty"><span class="e">🔒</span><b>Manage needs the Super login.</b><br>Lock Cremer Recipes (top right) and unlock it as Super.</div></div>`; return; }
   const toks = state.mq.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const list = R.filter(r=>toks.every(t=>r.hay.includes(t))).sort((a,b)=>a.order-b.order);
   const removed = cloud.recipes.filter(r=>r.removed).sort((a,b)=>nat(a.fg,b.fg));
@@ -1280,7 +1262,7 @@ function renderManage(){
       <button class="chip" id="mImport">⬆ Import recipe file</button>
       <input type="file" id="mFile" accept=".html,.htm,.json,text/html,application/json" hidden>
     </div>
-    <div class="s-info">Changes save to the database straight away and everyone sees them live. Each one goes in the update history with your username (<b>${esc(cloud.access.username)}</b>).</div>
+    <div class="s-info">Changes save to the database straight away and everyone sees them live. Each one goes in the update history.</div>
     ${empty?`<div class="m-warn">📥 <b>The database has no recipes yet.</b> Tap <b>Import recipe file</b> and choose <b>cremer-recipes.html</b> (the file from Teams). If someone has changes saved in that file’s Manage tab on their own computer, have them tap <b>Download updated file</b> there first and import that file instead.</div>`:''}
     <label class="search m-search" id="msw"><span class="sicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
       <input id="mq" type="search" autocomplete="off" spellcheck="false" placeholder="Find a recipe to edit or remove" value="${esc(state.mq)}" aria-label="Find a recipe"></label>
@@ -1294,7 +1276,7 @@ function renderManage(){
       </div>`).join('')||'<div class="empty">No recipe matches.</div>'}</div>
     ${list.length>(state.mLimit||60)?`<button class="more" id="mMore">Show ${list.length-(state.mLimit||60)} more</button>`:''}
     ${removed.length?`<details class="m-removed"><summary>Removed recipes (${removed.length})</summary>${removed.map(r0=>`
-      <div class="m-row" style="--c:${col(r0)}"><span class="dot"></span><div class="m-main"><b>${esc(r0.fg)}</b> <span>${esc(r0.bulk||'')}</span><div class="m-sub">Line ${esc(r0.line)} · ${esc(r0.size)} cc${r0.by?` · removed by ${esc(r0.by)}`:''}</div></div>
+      <div class="m-row" style="--c:${col(r0)}"><span class="dot"></span><div class="m-main"><b>${esc(r0.fg)}</b> <span>${esc(r0.bulk||'')}</span><div class="m-sub">Line ${esc(r0.line)} · ${esc(r0.size)} cc${r0.by?` · removed by ${esc(byName(r0.by))}`:''}</div></div>
       <button class="btn" data-mrestore="${esc(r0.k)}">Restore</button></div>`).join('')}</details>`:''}`;
   v.innerHTML = h;
   const mq=$('#mq');
@@ -1411,11 +1393,11 @@ function renderHistory(){
       <button class="iconbtn h-close" id="histClose" aria-label="Hide history" title="Hide history"><span class="x">${CLOSE_SVG}</span><svg class="hide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m13 6 6 6-6 6"/><path d="M5 6v12"/></svg></button></div>
     <div class="h-list">
       ${days.map(g=>`<div class="h-day">${esc(g.d)}</div>${g.items.map(h=>h.action==='imported'?`
-        <div class="h-item base"><span class="dot"></span><span class="h-main"><span class="h-t"><b>Recipe file</b></span><small>${esc((h.fields||[]).join(', '))} · by ${esc(h.by||'?')}</small></span><span class="h-act base">Imported</span></div>`:`
+        <div class="h-item base"><span class="dot"></span><span class="h-main"><span class="h-t"><b>Recipe file</b></span><small>${esc((h.fields||[]).join(', '))} · by ${esc(byName(h.by))}</small></span><span class="h-act base">Imported</span></div>`:`
         <button class="h-item" data-hk="${esc(h.k)}" style="--c:${col(h)}" type="button">
           <span class="dot"></span>
           <span class="h-main"><span class="h-t"><b>${esc(h.fg)}</b> ${esc(h.bulk||'')}</span>
-            <small>Line ${esc(h.line)} · ${esc(h.size)} cc · by ${esc(h.by||'?')}</small>
+            <small>Line ${esc(h.line)} · ${esc(h.size)} cc · by ${esc(byName(h.by))}</small>
             ${h.fields&&h.fields.length?`<small class="h-f">${esc(h.fields.join(', '))}</small>`:''}</span>
           <span class="h-act ${esc(h.action)}">${ACT[h.action]||esc(h.action)}</span>
         </button>`).join('')}`).join('')}
@@ -1455,27 +1437,15 @@ const stk=$('.sticky'), sentinel=document.createElement('div'); sentinel.style.c
 let stuckObs; const watchStuck=()=>{ if(stuckObs) stuckObs.disconnect(); const top=parseFloat(getComputedStyle(stk).top)||0;
   stuckObs=new IntersectionObserver(([en])=>{ const on=!en.isIntersecting && en.boundingClientRect.top < top+2; stk.classList.toggle('stuck', on); }, {rootMargin:`-${top+1}px 0px 0px 0px`});
   stuckObs.observe(sentinel); };
-/* start: the plant-network recipes, and anyone already signed in on this device */
+/* start: locked until someone unlocks with the Mech or Super password */
 gateMessage('⏳','Connecting…','Opening Cremer Recipes.');
 CloudSync.start({
-  onPublic: r => {
-    if (appOpen || (cloud.access && cloud.access.canRead)) return;
-    if (r.state==='ok') openApp();
-    else if (r.state==='offsite'){ if (!cloud.checking && !cloud.access) gateOffsite(r.ip); }
-    else if (!r.hasData && !cloud.checking && !cloud.access) gateUnreachable();
-  },
-  onSignedOut: () => { cloud.access=null; cloud.checking=null; $('#acct').hidden=true; if (appOpen && state.tab==='manage') renderManage(); },
-  onSignedIn: username => {
-    cloud.checking=username; $('#acct').hidden=false; $('#acctI').textContent=(username[0]||'?').toUpperCase(); $('#acct').title=`Signed in as ${username} · sign out`;
-    if (appOpen){ if (state.tab==='manage') renderManage(); }
-    else gateMessage('⏳','Connecting…',`Signed in as ${username}. Checking your access…`);
-  },
-  onAccess: a => {
-    cloud.access=a; cloud.checking=null;
-    if (a.offline && !appOpen) gateMessage('📡','Can’t reach the database','Check the connection, then try again.', true);
-    else if (a.canRead) openApp();
-    else if (!appOpen) gateNoAccess(a);
-    if (appOpen){ if (state.tab==='manage') renderManage(); if (a.offline) toast('Can’t reach the database — check the connection'); }
+  onUnavailable: msg => gateMessage('⚠️','Can’t open Cremer Recipes', msg, true),
+  onLocked: () => { cloud.role=null; cloud.until=0; $('#acct').hidden=true; appOpen=false; gateLock(); },
+  onUnlocked: u => {
+    cloud.role=u.role; cloud.until=u.until;
+    const a=$('#acct'); a.hidden=false; $('#acctI').textContent=u.role==='super'?'S':'M'; a.title=`${ROLE_NAME[u.role]} · Lock`;
+    openApp(); refreshAll();
   },
   onRecipes: list => { cloud.recipes=list; cloud.loaded=true; refreshAll(); },
   onHistory: list => { cloud.history=list; renderHistory(); },

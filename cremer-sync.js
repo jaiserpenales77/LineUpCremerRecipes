@@ -1,20 +1,21 @@
-// Gets the recipes and keeps them up to date. Two ways in:
+// Sign-in and live sync for Cremer Recipes, through the Firestore database the
+// LineUp (JDE Sched) and Packaging Lead Hub apps use (project
+// jde-schedule-database).
 //
-// 1. No sign-in, on the plant network: the cremerRecipes function (functions/)
-//    hands the recipes to devices whose IP address is on LineUp's list of
-//    allowed networks (jde-sched-access/network). The app
-//    asks again every minute and whenever it comes back into view.
-// 2. Signed in with a Packaging Lead Hub account (username@pk030.local, account
-//    type in pk030-users/{uid}, owners in pk030/admins): MLT and up read the
-//    recipes straight from Firestore, live, from anywhere; Lead and up change
-//    them in Manage.
+// Two shared logins of its own, separate from every other app's:
+//   Mech   cremer-mech@jde-sched.local    look up, copy and print recipes
+//   Super  cremer-super@jde-sched.local   the same, plus Manage
+// Their passwords are set in the Firebase console (Authentication → Users).
+// Being @jde-sched.local accounts, LineUp's sign-in check (allowedNetworksOnly
+// in the JDE-Sched repository) refuses them from networks that aren't on
+// LineUp's list, once that check is turned on.
 //
-// Firestore (project jde-schedule-database, shared with Packaging Lead Hub and
-// JDE Sched):
+// Like LineUp, a sign-in lasts until the app is closed, or for 12 hours with
+// "Remember this computer".
+//
+// Firestore:
 //   cremer-recipes/{id}  one document per recipe (removed ones are kept, marked removed)
 //   cremer-history/{id}  one document per change made in Manage, never changed
-//   cremer/meta          when the recipes last changed (stamped with every change)
-//   jde-sched-access/network  LineUp's allowed networks, read by the function
 // The Firestore rules in README.md enforce all of this, whatever the page does.
 const CloudSync = (() => {
   // Public by design: access is governed by the Firestore security rules.
@@ -26,42 +27,44 @@ const CloudSync = (() => {
     messagingSenderId: "200523177124",
     appId: "1:200523177124:web:9459478521f146e28d9a31"
   };
-  let FUNCTION_URL = "https://us-central1-jde-schedule-database.cloudfunctions.net/cremerRecipes";
-  const POLL_MS = 60 * 1000;
-  const USERNAME_DOMAIN = "pk030.local";
+  const DOMAIN = "jde-sched.local";
+  const ACCOUNT = { mech: "cremer-mech", super: "cremer-super" };
+  const ROLE_OF = { "cremer-mech": "mech", "cremer-super": "super" };
+  const REMEMBER_HOURS = 12;
   const RECIPES = "cremer-recipes";
   const HISTORY = "cremer-history";
   const HISTORY_LIMIT = 500;
-  const ROLES = ["plt", "mlt", "lead", "admin", "owner"];
-  const atLeast = (role, min) => ROLES.indexOf(role) >= ROLES.indexOf(min);
 
   let fs = null, db = null, authMod = null, auth = null;
   let handlers = null;
   let unsubs = [];
-  let live = false;            // reading Firestore directly (signed in, MLT and up)
   let meta = { recipes: null };
   let failed = null;
-  let me = null;               // { uid, username, role }
-  let pub = { state: null, at: null, rev: null, timer: null, busy: false };
+  let me = null; // { uid, name, role }
 
-  const usernameOf = user => (user.email || "").toLowerCase().replace(`@${USERNAME_DOMAIN}`, "");
-  const toEmail = u => { u = u.trim().toLowerCase(); return u.includes("@") ? u : `${u}@${USERNAME_DOMAIN}`; };
-  // A recipe's document id: its "line|sheet" key, made safe for Firestore.
   const docId = key => encodeURIComponent(key).replace(/\./g, "%2E");
   const iso = ts => ts && ts.toDate ? ts.toDate().toISOString() : null;
-  const hhmm = d => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const nameOf = user => (user && user.email || "").toLowerCase().split("@")[0];
+
+  /* ---- how long this computer stays unlocked ---- */
+  const REMEMBER_KEY = "cremer.rememberUntil", LEFT_KEY = "cremer.leftAt";
+  const ls = { get: k => { try { return localStorage.getItem(k); } catch { return null; } },
+               set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
+  const rememberedUntil = () => Number(ls.get(REMEMBER_KEY)) || 0;
+  const rememberExpired = () => rememberedUntil() > 0 && Date.now() > rememberedUntil();
+  // Browsers that reopen closed tabs bring the tab's sign-in back with it: the
+  // tab notes when it was left, and if it comes back later than a refresh
+  // would take, it was closed, so it starts locked (as LineUp does).
+  addEventListener("pagehide", () => { try { sessionStorage.setItem(LEFT_KEY, String(Date.now())); } catch {} });
+  const leftAt = () => { try { return Number(sessionStorage.getItem(LEFT_KEY)) || 0; } catch { return 0; } };
+  const reopenedAfterClose = () => rememberedUntil() === 0 && leftAt() > 0 && Date.now() - leftAt() > 30000;
 
   function status() {
-    if (live) {
-      if (failed) return { state: "error", text: failed };
-      if (!meta.recipes) return { state: "connecting", text: "Connecting…" };
-      if (meta.recipes.fromCache) return { state: "offline", text: "Offline — showing the last recipes downloaded" };
-      if (meta.recipes.hasPendingWrites) return { state: "saving", text: "Saving…" };
-      return { state: "synced", text: "Live" };
-    }
-    if (pub.state === "ok") return { state: "synced", text: `Updated ${hhmm(pub.at)}` };
-    if (pub.state === "error" && pub.at) return { state: "offline", text: `Offline — recipes from ${hhmm(pub.at)}` };
-    return { state: "connecting", text: "Connecting…" };
+    if (failed) return { state: "error", text: failed };
+    if (!meta.recipes) return { state: "connecting", text: "Connecting…" };
+    if (meta.recipes.fromCache) return { state: "offline", text: "Offline — showing the last recipes downloaded" };
+    if (meta.recipes.hasPendingWrites) return { state: "saving", text: "Saving…" };
+    return { state: "synced", text: "Live" };
   }
   const report = () => handlers && handlers.onStatus(status());
 
@@ -70,50 +73,10 @@ const CloudSync = (() => {
     failed = err && err.code === "permission-denied" ? "Database access denied" : "Database unavailable";
     report();
     if (handlers) handlers.onError(err && err.code === "permission-denied"
-      ? "The database refused this. Your account may not be allowed to do it, or the Cremer Recipes rules aren't published yet."
+      ? "The database refused this. The Cremer Recipes rules may not be published yet."
       : "Couldn't reach the database. Check the connection and try again.");
   }
 
-  /* ---- 1. no sign-in: the plant-network function ---- */
-  async function fetchPublic() {
-    if (live || pub.busy) return;
-    pub.busy = true;
-    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 20000);
-    try {
-      const res = await fetch(FUNCTION_URL, { cache: "no-store", signal: ctl.signal });
-      if (live) return;
-      if (res.status === 403) {
-        const body = await res.json().catch(() => ({}));
-        pub.state = "offsite";
-        handlers.onPublic({ state: "offsite", ip: body.ip || "" });
-      } else if (res.ok) {
-        const data = await res.json();
-        pub.state = "ok"; pub.at = new Date();
-        if (data.rev !== pub.rev || data.rev === 0) {
-          pub.rev = data.rev;
-          handlers.onRecipes(data.recipes || []);
-          handlers.onHistory(data.history || []);
-        }
-        handlers.onPublic({ state: "ok" });
-      } else throw new Error("HTTP " + res.status);
-    } catch (err) {
-      if (live) return;
-      console.warn("Couldn't get the recipes.", err);
-      pub.state = "error";
-      handlers.onPublic({ state: "error", hasData: !!pub.at });
-    } finally {
-      clearTimeout(t); pub.busy = false; report();
-    }
-  }
-  function startPolling() {
-    clearInterval(pub.timer);
-    pub.timer = setInterval(() => { if (document.visibilityState === "visible") fetchPublic(); }, POLL_MS);
-    fetchPublic();
-  }
-  const stopPolling = () => clearInterval(pub.timer);
-  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !live && pub.timer) fetchPublic(); });
-
-  /* ---- 2. signed in: Firestore ---- */
   async function loadSdk() {
     const base = new URL("assets/vendor/firebase/", document.baseURI).href;
     const [appMod, fsMod, aMod] = await Promise.all([
@@ -132,42 +95,19 @@ const CloudSync = (() => {
       db = fsMod.initializeFirestore(app, settings);
     }
     fs = fsMod; authMod = aMod; auth = aMod.getAuth(app);
-    if (EMU) {
-      aMod.connectAuthEmulator(auth, `http://127.0.0.1:${EMU[0]}`, { disableWarnings: true });
-      fsMod.connectFirestoreEmulator(db, "127.0.0.1", +EMU[1]);
+    // Testing only: on this computer's own address, ?emulator=AUTH,FIRESTORE
+    // (ports) uses the Firebase emulators instead of the real project.
+    const emu = new URLSearchParams(location.search).get("emulator");
+    if (emu && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+      const [ap, fp] = emu.split(",");
+      aMod.connectAuthEmulator(auth, `http://127.0.0.1:${ap}`, { disableWarnings: true });
+      fsMod.connectFirestoreEmulator(db, "127.0.0.1", +fp);
     }
   }
-  // Testing only: on this computer's own address, ?emulator=AUTH,FIRESTORE,FUNCTIONS
-  // (ports) uses the Firebase emulators instead of the real database.
-  const EMU = (() => {
-    const e = new URLSearchParams(location.search).get("emulator");
-    return e && /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? e.split(",") : null;
-  })();
-  if (EMU && EMU[2]) FUNCTION_URL = `http://127.0.0.1:${EMU[2]}/jde-schedule-database/us-central1/cremerRecipes`;
 
-  function stopLive() { unsubs.forEach(u => u()); unsubs = []; meta = { recipes: null }; failed = null; live = false; }
-
-  async function loadAccess(user) {
-    const username = usernameOf(user);
-    let role = "none";
-    try {
-      const [rec, admins] = await Promise.all([
-        fs.getDoc(fs.doc(db, "pk030-users", user.uid)),
-        fs.getDoc(fs.doc(db, "pk030", "admins"))
-      ]);
-      const owners = admins.exists() ? (admins.data().owners || []) : [];
-      if (owners.includes(username)) role = "owner";
-      else if (rec.exists()) role = rec.data().role || "none";
-    } catch (err) {
-      console.error(err);
-      if (err.code !== "permission-denied") return { username, role: null, canRead: false, canEdit: false, offline: true };
-    }
-    me = { uid: user.uid, username, role };
-    return { username, role, canRead: atLeast(role, "mlt"), canEdit: atLeast(role, "lead") };
-  }
+  function stop() { unsubs.forEach(u => u()); unsubs = []; meta = { recipes: null }; failed = null; }
 
   function listen() {
-    live = true; stopPolling();
     unsubs.push(fs.onSnapshot(fs.collection(db, RECIPES), { includeMetadataChanges: true }, snap => {
       meta.recipes = snap.metadata; failed = null;
       handlers.onRecipes(snap.docs.map(d => {
@@ -182,63 +122,84 @@ const CloudSync = (() => {
     }, err => console.error("History unavailable", err)));
   }
 
-  // h: onPublic({state:'ok'|'offsite'|'error', ip, hasData}), onSignedIn(username),
-  //    onSignedOut(), onAccess(access), onRecipes(list), onHistory(list),
-  //    onStatus(status), onError(message)
+  // h: onLocked(), onUnlocked({ role, until }), onRecipes(list), onHistory(list),
+  //    onStatus(status), onError(message), onUnavailable(message)
   async function start(h) {
     handlers = h;
-    startPolling();
     try { await loadSdk(); }
-    catch (err) { console.error("Sign-in unavailable", err); return; }
-    authMod.onAuthStateChanged(auth, async user => {
-      stopLive(); me = null;
-      if (!user) { h.onSignedOut(); if (!pub.timer) startPolling(); return; }
-      h.onSignedIn(usernameOf(user));
-      const access = await loadAccess(user);
-      if (auth.currentUser !== user) return;
-      h.onAccess(access);
-      if (access.canRead) listen();
+    catch (err) { console.error(err); h.onUnavailable("Cremer Recipes couldn't load. Open it from its web address, not from a saved file."); return; }
+    try {
+      await auth.authStateReady();
+      if ((rememberExpired() || reopenedAfterClose()) && auth.currentUser) await authMod.signOut(auth);
+      if (rememberExpired()) ls.set(REMEMBER_KEY, null);
+    } catch (err) { console.error("Couldn't check the saved sign-in.", err); }
+    authMod.onAuthStateChanged(auth, user => {
+      stop(); me = null;
+      const role = user && nameOf(user).length && user.email.toLowerCase().endsWith("@" + DOMAIN) ? ROLE_OF[nameOf(user)] : null;
+      if (!role) { if (user) authMod.signOut(auth); h.onLocked(); return; }
+      me = { uid: user.uid, name: nameOf(user), role };
+      h.onUnlocked({ role, until: rememberedUntil() });
+      listen();
     });
+    // A remembered computer locks itself when its 12 hours are up, even if the app is open.
+    setInterval(() => { if (auth.currentUser && rememberExpired()) lock(); }, 60 * 1000);
   }
 
-  async function signIn(username, password) {
-    if (!authMod) throw new Error("Sign-in isn't available. Check the connection and reload.");
-    try { await authMod.signInWithEmailAndPassword(auth, toEmail(username), password); }
-    catch (err) {
-      const wrong = ["auth/invalid-credential", "auth/wrong-password", "auth/user-not-found", "auth/invalid-email"];
-      if (wrong.includes(err.code)) throw new Error("Wrong username or password.");
-      if (err.code === "auth/too-many-requests") throw new Error("Too many attempts. Wait a few minutes and try again.");
-      if (err.code === "auth/network-request-failed") throw new Error("Can't reach the sign-in service. Check the connection.");
-      if (err.code === "auth/user-disabled") throw new Error("This account has been disabled.");
-      throw new Error(`Sign-in failed (${err.code || err.message}).`);
+  // Plain-language reason a sign-in failed.
+  function unlockError(err, label) {
+    const code = err && err.code || "";
+    const message = String(err && err.message || "");
+    // Refused by LineUp's sign-in check: not from an allowed network.
+    if (message.includes("can only be opened from")) {
+      const network = (message.match(/This network: ([0-9a-fA-F.:]+)/) || [])[1];
+      return `Access restricted. Cremer Recipes can only be used on approved company networks. This device's network${network ? ` (${network})` : ""} is not approved. For access, please contact the LineUp administrator.`;
+    }
+    if (code === "auth/too-many-requests") return "Too many tries. Wait a few minutes, then try again.";
+    if (code === "auth/network-request-failed") return "Can't reach the internet. Check this computer's connection and try again.";
+    if (code === "auth/user-disabled") return `The ${label} login has been turned off.`;
+    return `That password isn't right for ${label}. Check it and try again.`;
+  }
+
+  // role: "mech" or "super". remember: stay unlocked for 12 hours on this
+  // computer, even when the app is closed; otherwise until it's closed.
+  async function unlock(role, password, remember) {
+    const label = role === "super" ? "Super" : "Mech";
+    if (!authMod) throw new Error("Cremer Recipes couldn't load. Check the connection and reload.");
+    try {
+      if (auth.currentUser) await authMod.signOut(auth);
+      await authMod.setPersistence(auth, remember ? authMod.browserLocalPersistence : authMod.browserSessionPersistence);
+      ls.set(REMEMBER_KEY, remember ? String(Date.now() + REMEMBER_HOURS * 3600 * 1000) : null);
+      await authMod.signInWithEmailAndPassword(auth, `${ACCOUNT[role]}@${DOMAIN}`, password);
+    } catch (err) {
+      ls.set(REMEMBER_KEY, null);
+      throw new Error(unlockError(err, label));
     }
   }
 
-  // Signs out and removes this computer's offline copy of the recipes.
-  async function signOut() {
-    stopLive();
+  // Locks this computer and removes its offline copy of the recipes.
+  async function lock() {
+    stop();
+    ls.set(REMEMBER_KEY, null);
     await authMod.signOut(auth);
-    try { await fs.terminate(db); await fs.clearIndexedDbPersistence(db); } catch (err) { console.warn("Couldn't clear the offline cache.", err); }
+    try { await fs.terminate(db); await fs.clearIndexedDbPersistence(db); } catch (err) { console.warn("Couldn't clear the offline copy.", err); }
     location.reload();
   }
 
   const hasPendingWrites = () => !!(meta.recipes && meta.recipes.hasPendingWrites);
 
-  const stamp = () => ({ at: fs.serverTimestamp(), by: me.username });
-  const metaRef = () => fs.doc(db, "cremer", "meta");
+  const stamp = () => ({ at: fs.serverTimestamp(), by: me.name });
   const histDoc = entry => ({
     action: entry.action, k: entry.k || "", fg: String(entry.fg ?? ""), bulk: String(entry.bulk ?? ""),
     line: +entry.line || 0, size: +entry.size || 0, fields: (entry.fields || []).map(String),
     uid: me.uid, ...stamp()
   });
 
-  // One change: the recipe, its history entry and the "last changed" stamp,
-  // together. Firestore shows it at once and sends it when it can.
+  // One change: the recipe document and its history entry, together. Firestore
+  // shows it at once and sends it when it can (also after going back online).
   function commit(fn) {
     if (!db || !me) return;
     const b = fs.writeBatch(db);
     fn(b);
-    b.set(metaRef(), stamp());
     b.commit().catch(fail);
     report();
   }
@@ -270,20 +231,13 @@ const CloudSync = (() => {
       const chunk = fresh.slice(i, i + 100);
       const b = fs.writeBatch(db);
       chunk.forEach(x => put(b, x));
-      try { await b.commit(); }
-      catch (err) {
-        // The rules look up the account for every document; if a big batch
-        // goes over Firestore's per-request lookup limit, send them one by one.
-        if (err.code !== "permission-denied") throw err;
-        for (const x of chunk) { const one = fs.writeBatch(db); put(one, x); await one.commit(); }
-      }
+      await b.commit();
     }
     const h = fs.writeBatch(db);
     h.set(fs.doc(fs.collection(db, HISTORY)), histDoc({ action: "imported", fg: "Recipe file", fields: [`${fresh.length} recipes`] }));
-    h.set(metaRef(), stamp());
     await h.commit();
     return { added: fresh.length, skipped: recs.length - fresh.length };
   }
 
-  return { start, signIn, signOut, hasPendingWrites, saveRecipe, setRemoved, importRecipes, docId };
+  return { start, unlock, lock, hasPendingWrites, saveRecipe, setRemoved, importRecipes, docId };
 })();

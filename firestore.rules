@@ -1,0 +1,164 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // JDE Sched: each shift's data opens only with that shift's password.
+    // The accounts are 1st@jde-sched.local, 2nd@jde-sched.local and
+    // 3rd@jde-sched.local (created in the Firebase console). Any other
+    // account - including Packaging Lead Hub accounts - gets nothing.
+    function jdeShiftAccount(shift) {
+      return request.auth != null
+        && shift in ['1st', '2nd', '3rd']
+        && request.auth.token.email == shift + '@jde-sched.local';
+    }
+    match /jde-sched/{shift} {
+      allow read, write: if jdeShiftAccount(shift);
+    }
+    match /jde-sched/{shift}/{rest=**} {
+      allow read, write: if jdeShiftAccount(shift);
+    }
+
+    // Packaging Lead Hub. Accounts are username@pk030.local.
+    function signedIn() {
+      return request.auth != null
+        && request.auth.token.email.matches('[^@]+@pk030[.]local');
+    }
+    function username() {
+      return request.auth.token.email.split('@')[0];
+    }
+    function doc(path) {
+      return /databases/$(database)/documents/pk030/$(path);
+    }
+    // Owners: the usernames in pk030/admins "owners" (Firebase console only).
+    function owners() {
+      return exists(doc('admins')) ? get(doc('admins')).data.get('owners', []) : [];
+    }
+    function isOwner() {
+      return signedIn() && username() in owners();
+    }
+    // Everyone else's account type is in their pk030-users record.
+    function myRole() {
+      let me = /databases/$(database)/documents/pk030-users/$(request.auth.uid);
+      return exists(me) ? get(me).data.role : 'none';
+    }
+    function isAdmin() {
+      return isOwner() || (signedIn() && myRole() == 'admin');
+    }
+    function isLead() {
+      return isAdmin() || (signedIn() && myRole() == 'lead');
+    }
+    // A Lead's change to Stored Data: only new bulk/FG items and line rates,
+    // none changed or removed.
+    function onlyAddsItems() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bulkItems', 'fgItems', 'lineRates'])
+        && onlyAdds('bulkItems') && onlyAdds('fgItems') && onlyAdds('lineRates');
+    }
+    function onlyAdds(field) {
+      let change = request.resource.data.get(field, {}).diff(resource.data.get(field, {}));
+      return change.removedKeys().size() == 0 && change.changedKeys().size() == 0;
+    }
+    // Usernames an admin has linked to a lead.
+    function linkedToLead() {
+      return exists(doc('storedData'))
+        && username() in get(doc('storedData')).data.get('leadUsers', {});
+    }
+
+    // Saved yield sheets: Lead and up.
+    match /pk030-yield-sheets/{id} {
+      allow read, write: if isLead();
+    }
+    // Stored Data: Leads read it and add new bulk/FG items and line rates;
+    // only admins change or remove them, and change leads and their usernames.
+    match /pk030/storedData {
+      allow read: if isLead();
+      allow create: if isAdmin()
+        || (isLead() && request.resource.data.keys().hasOnly(['bulkItems', 'fgItems', 'lineRates']));
+      allow update: if isAdmin() || (isLead() && onlyAddsItems());
+      allow delete: if isAdmin();
+    }
+    // The owners list: read by the app, changed only in the Firebase console.
+    match /pk030/admins {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    // Account records. A new account makes its own as a PLT (or as a Lead if
+    // an admin already linked its username to a lead). Admins change account
+    // types; only owners change an admin's; nobody changes their own.
+    match /pk030-users/{uid} {
+      allow read: if signedIn() && (uid == request.auth.uid || isAdmin());
+      allow create: if signedIn() && uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['username', 'name', 'role', 'createdAt'])
+        && request.resource.data.username == username()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.createdAt == request.time
+        && (request.resource.data.role == 'plt'
+          || (request.resource.data.role == 'lead' && linkedToLead()));
+      allow update: if isAdmin() && uid != request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role'])
+        && request.resource.data.role in ['plt', 'mlt', 'lead', 'admin']
+        && !(resource.data.username in owners())
+        && (isOwner() || resource.data.role != 'admin');
+      allow delete: if false;
+    }
+    // Activity log: everyone signed in adds entries as themselves; only
+    // admins read it; nobody changes or deletes entries.
+    match /pk030-activity/{id} {
+      allow read: if isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'username', 'action', 'detail', 'at'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.username == username()
+        && request.resource.data.action is string
+        && request.resource.data.action.size() <= 60
+        && request.resource.data.detail is string
+        && request.resource.data.detail.size() <= 300
+        && request.resource.data.at == request.time;
+      allow update, delete: if false;
+    }
+    // Cremer Recipes (LineUpCremerRecipes), with the Packaging Lead Hub
+    // accounts: MLT and up read the recipes and their update history; Lead and
+    // up add, change, remove (marked removed, never deleted) and restore them.
+    // Every write is stamped with the account and the server time.
+    function cremerReader() {
+      return isOwner() || (signedIn() && myRole() in ['mlt', 'lead', 'admin']);
+    }
+    function cremerStamped(d) {
+      return d.by == username() && d.at == request.time;
+    }
+    function cremerRecipeOk() {
+      let d = request.resource.data;
+      return d.keys().hasOnly([
+          'id', 'fg', 'bulk', 'line', 'size', 'sheet', 'length', 'width',
+          'transparent', 'count', 'precount', 'maxReject', 'channelWidth',
+          'overcount', 'dosingSpeed', 'dosingStartPos', 'dosingStartSpeed', 'bpm',
+          'speedBalance', 'beltSpeed', 'handlingDischarge', 'rearSpeed', 'rearPulse',
+          'rearInterval', 'frontSpeed', 'frontAmp', 'dischargeTime',
+          'dischargeIntervals', 'dischargeMode', 'precountFlap', 'modules',
+          'ejector', 'ionizer', 'upsideSensor', 'diameter', 'screwHeight',
+          'screwAngle', 'pockets', 'gateOpen', 'gateClose', 'sideSensor', 'funnel',
+          'fromGuide', 'edited', 'removed', 'at', 'by'
+        ])
+        && d.keys().hasAll(['fg', 'line', 'size', 'sheet', 'fromGuide', 'edited', 'removed', 'at', 'by'])
+        && d.fg is string && d.fg.size() > 0 && d.fg.size() <= 40
+        && d.sheet is string && d.sheet.size() <= 120
+        && d.line is int && d.size is int
+        && d.fromGuide is bool && d.edited is bool && d.removed is bool
+        && cremerStamped(d);
+    }
+    match /cremer-recipes/{id} {
+      allow read: if cremerReader();
+      allow create, update: if isLead() && cremerRecipeOk();
+      allow delete: if false;
+    }
+    match /cremer-history/{id} {
+      allow read: if cremerReader();
+      allow create: if isLead()
+        && request.resource.data.keys().hasOnly(['action', 'k', 'fg', 'bulk', 'line', 'size', 'fields', 'uid', 'at', 'by'])
+        && request.resource.data.action in ['added', 'edited', 'removed', 'restored', 'imported']
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.fields is list && request.resource.data.fields.size() <= 60
+        && cremerStamped(request.resource.data);
+      allow update, delete: if false;
+    }
+  }
+}

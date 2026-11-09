@@ -1,0 +1,6 @@
+node_modules/
+*.log
+.firebase/
+# The recipe data must never be published from this public repository.
+cremer-recipes*.html
+*.recipes.json

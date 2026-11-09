@@ -1,0 +1,1447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LineUp · Cremer Recipes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%23141c2f%22%2F%3E%3Cg%20transform%3D%22translate%284%203%29%20scale%28.875%29%22%3E%3Crect%20x%3D%227.5%22%20y%3D%2233%22%20width%3D%2215%22%20height%3D%2216%22%20rx%3D%223.5%22%20fill%3D%22%23d97706%22%2F%3E%3Crect%20x%3D%2211.5%22%20y%3D%2230%22%20width%3D%227%22%20height%3D%223.5%22%20fill%3D%22%23d97706%22%2F%3E%3Crect%20x%3D%229.5%22%20y%3D%2225.5%22%20width%3D%2211%22%20height%3D%225%22%20rx%3D%222%22%20fill%3D%22%23facc15%22%2F%3E%3Crect%20x%3D%2224.5%22%20y%3D%2226%22%20width%3D%2215%22%20height%3D%2223%22%20rx%3D%223.5%22%20fill%3D%22%23d97706%22%2F%3E%3Crect%20x%3D%2228.5%22%20y%3D%2223%22%20width%3D%227%22%20height%3D%223.5%22%20fill%3D%22%23d97706%22%2F%3E%3Crect%20x%3D%2226.5%22%20y%3D%2218.5%22%20width%3D%2211%22%20height%3D%225%22%20rx%3D%222%22%20fill%3D%22%23facc15%22%2F%3E%3Crect%20x%3D%2241.5%22%20y%3D%2219%22%20width%3D%2215%22%20height%3D%2230%22%20rx%3D%223.5%22%20fill%3D%22%23d97706%22%2F%3E%3Crect%20x%3D%2245.5%22%20y%3D%2216%22%20width%3D%227%22%20height%3D%223.5%22%20fill%3D%22%23d97706%22%2F%3E%3Crect%20x%3D%2243.5%22%20y%3D%2211.5%22%20width%3D%2211%22%20height%3D%225%22%20rx%3D%222%22%20fill%3D%22%23facc15%22%2F%3E%3Crect%20x%3D%225%22%20y%3D%2251.5%22%20width%3D%2254%22%20height%3D%224.5%22%20rx%3D%222.25%22%20fill%3D%22%23facc15%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+<script>/* intro: plays every time the app is opened (never with reduced motion) */
+try{ if(!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro-on'); }catch(e){}
+document.documentElement.classList.add('no-anim');</script>
+<meta name="description" content="Look up Cremer counter settings by FG item or bulk item.">
+<style>
+:root{
+  --side:300px; --side-now:var(--side);
+  --bg:#f6f7fb; --glass:#ffffff; --card:#ffffff; --ink:#171a24; --ink2:#5b6172; --ink3:#9399a8; --line:#e5e7ee;
+  --g1:#2563eb; --g2:#2563eb; --g3:#2563eb; --grad:var(--g1);
+  --blob1:#c4b5fd; --blob2:#fbcfe8; --blob3:#a5f3fc; --blob4:#fde68a;
+  --c-g:#10b981; --c-y:#eab308; --c-b:#3b82f6; --c-p:#ec4899; --c-v:#8b5cf6;
+  --c-75:#0d9488; --c-150:#ea580c; --c-625:#dc2626; --c-750:#475569; --c-950:#a16207;
+  --warn:#b45309; --warn-bg:#fef3c7; --k1:var(--ink); --k2:var(--ink); --k3:var(--ink); --k4:var(--ink); --ok:#059669; --diff:#fff4d4;
+  --shadow:0 1px 2px rgba(20,20,40,.04),0 6px 18px rgba(20,20,40,.06);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101218; --glass:#181b23; --card:#181b23; --ink:#eef0f5; --ink2:#aab0be; --ink3:#727989; --line:#2a2e39;
+  --g1:#3b82f6; --g2:#3b82f6; --g3:#3b82f6;
+  --blob1:#4c1d95; --blob2:#831843; --blob3:#155e75; --blob4:#713f12;
+  --warn:#fbbf24; --warn-bg:#3a2e10; --k1:var(--ink); --k2:var(--ink); --k3:var(--ink); --k4:var(--ink); --ok:#34d399; --diff:#3a3214;
+  --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 32px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --bg:#101218; --glass:#181b23; --card:#181b23; --ink:#eef0f5; --ink2:#aab0be; --ink3:#727989; --line:#2a2e39;
+  --g1:#3b82f6; --g2:#3b82f6; --g3:#3b82f6;
+  --blob1:#4c1d95; --blob2:#831843; --blob3:#155e75; --blob4:#713f12;
+  --warn:#fbbf24; --warn-bg:#3a2e10; --k1:var(--ink); --k2:var(--ink); --k3:var(--ink); --k4:var(--ink); --ok:#34d399; --diff:#3a3214;
+  --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 32px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden;overflow-x:clip}
+html{overflow-x:clip}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.num{font-variant-numeric:tabular-nums}
+
+/* colourful animated background */
+.bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bgfx i{position:absolute;width:52vmax;height:52vmax;border-radius:50%;filter:blur(70px);opacity:.75;animation:drift 22s ease-in-out infinite alternate}
+.bgfx i:nth-child(1){background:var(--blob1);top:-22vmax;left:-14vmax}
+.bgfx i:nth-child(2){background:var(--blob2);top:-18vmax;right:-18vmax;animation-delay:-6s}
+.bgfx i:nth-child(3){background:var(--blob3);bottom:-28vmax;left:8vmax;animation-delay:-11s}
+.bgfx i:nth-child(4){background:var(--blob4);bottom:-30vmax;right:-10vmax;opacity:.5;animation-delay:-16s}
+@keyframes drift{to{transform:translate(6vmax,5vmax) scale(1.12)}}
+
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+
+/* header */
+header{position:relative;text-align:center;padding:38px 46px 20px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:var(--glass);border:1px solid var(--line);font-size:12.5px;font-weight:700;color:var(--ink2);animation:fade .5s both}
+.badge b{width:8px;height:8px;border-radius:50%;background:var(--g1)}
+h1{margin:12px 0 4px;font-size:clamp(28px,5.5vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.05;color:var(--ink);animation:fade .5s .05s both}
+@keyframes shine{to{background-position:200% center}}
+.sub{color:var(--ink2);font-size:15px;animation:fade .5s .1s both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+.iconbtn{border:1px solid var(--line);background:var(--glass);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--ink2);transition:transform .15s;flex:none}
+.iconbtn:hover{transform:rotate(-12deg)}
+.iconbtn:active{transform:scale(.9)}
+header .iconbtn{position:absolute;right:0;top:34px}
+
+/* search + filters */
+.sticky{position:sticky;top:0;z-index:5;padding:8px 0 12px}
+.sticky::before{content:"";position:absolute;inset:0 calc(50% - 50vw);background:var(--glass);border-bottom:1px solid var(--line);z-index:-1;opacity:0;transition:opacity .2s}
+.sticky.stuck::before{opacity:1}
+.search{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:12px;background:var(--glass);border-radius:18px;padding:0 18px;box-shadow:var(--shadow);position:relative;border:1px solid var(--line);animation:fade .5s .15s both}
+.search::after{content:"";position:absolute;inset:-2px;border-radius:20px;padding:2px;background:var(--grad);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .2s;pointer-events:none}
+.search:focus-within::after{opacity:1}
+.search .sicon{flex:none;width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#fff}
+.search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font-size:17px;padding:16px 0}
+.search input::placeholder{color:var(--ink3)}
+.search input::-webkit-search-cancel-button{display:none}
+.clear{border:0;background:var(--line);width:26px;height:26px;border-radius:50%;display:none;place-items:center;color:var(--ink2)}
+.search.has .clear{display:grid}
+.filters{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px;animation:fade .5s .2s both}
+.sep{flex-basis:100%;height:0}
+.chip{border:1px solid var(--line);background:var(--glass);border-radius:999px;padding:7px 15px;font-size:14px;font-weight:700;color:var(--ink2);display:inline-flex;align-items:center;gap:7px;transition:transform .15s,background .2s,color .2s,box-shadow .2s}
+.chip:hover{transform:translateY(-2px)}
+.chip:active{transform:scale(.94)}
+.chip.line.on{background:var(--g1);color:#fff;border-color:var(--g1)}
+.chip.size{--c:var(--g1)}
+.chip.size.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip.size small{opacity:.7;font-weight:600}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:var(--c)}
+
+/* results */
+.count{text-align:center;color:var(--ink2);font-size:13.5px;margin:6px 0 14px;font-weight:600}
+.count b{color:var(--ink);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,196px));justify-content:center;gap:14px}
+.card{--c:var(--g1);position:relative;overflow:hidden;border:1px solid var(--line);background:var(--card);border-radius:20px;padding:20px 14px 16px;text-align:center;box-shadow:var(--shadow);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s;animation:pop .4s cubic-bezier(.2,.8,.2,1) both}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--c)}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(20,20,40,.12)}
+.card:active{transform:translateY(-2px) scale(.98)}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.97)}}
+.card .fg{position:relative;font-size:24px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+.card .bulk{position:relative;color:var(--ink2);font-weight:600;font-size:14px;margin-top:3px}
+.card .tag{position:relative;display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:4px 11px;border-radius:999px;background:var(--bg);color:var(--ink2);font-size:12px;font-weight:700}
+.card .tag::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
+.card .mini{position:relative;display:flex;justify-content:center;gap:12px;margin-top:12px;font-size:12px;color:var(--ink3);font-weight:600}
+.card .mini b{color:var(--ink);font-size:14px}
+mark{background:none;color:var(--g1);text-decoration:underline 3px;text-underline-offset:3px}
+.empty{grid-column:1/-1;text-align:center;padding:50px 16px;color:var(--ink2)}
+.empty .e{font-size:48px;display:block;margin-bottom:8px;animation:wob 2s ease-in-out infinite}
+@keyframes wob{50%{transform:rotate(-10deg) scale(1.1)}}
+.more{display:block;margin:18px auto 0;border:0;background:var(--grad);color:#fff;border-radius:999px;padding:10px 22px;font-weight:700;transition:transform .15s}
+.more:active{transform:scale(.95)}
+footer{text-align:center;color:var(--ink3);font-size:12.5px;padding:34px 16px 100px}
+
+/* detail panel */
+.scrim{position:fixed;inset:0;background:rgba(10,12,24,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+.scrim.show{opacity:1;pointer-events:auto}
+.panel{--c:var(--g1);position:fixed;left:50%;top:50%;width:min(560px,calc(100% - 32px));max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);background:var(--bg);z-index:21;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(0,0,0,.28);opacity:0;visibility:hidden;transform:translate(-50%,-46%) scale(.96);transition:opacity .22s,transform .28s cubic-bezier(.2,.8,.2,1),visibility .28s}
+.panel.show{opacity:1;visibility:visible;transform:translate(-50%,-50%)}
+.panel .p-head,.panel .p-foot{flex:none}.panel .p-body{min-height:0}
+.p-head{position:relative;overflow:hidden;padding:24px 20px 18px;text-align:center;background:var(--card);border-bottom:1px solid var(--line);border-top:5px solid var(--c)}
+.p-head .iconbtn{position:absolute;right:14px;top:14px;z-index:2}
+.p-fg{position:relative;font-size:40px;font-weight:900;letter-spacing:-.03em;line-height:1}
+.p-bulk{position:relative;font-weight:600;font-size:16px;color:var(--ink2);margin-top:4px}
+.p-tag{position:relative;display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:5px 12px;border-radius:999px;background:var(--bg);color:var(--ink2);font-size:13px;font-weight:700}
+.p-tag::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
+.p-body{flex:1;overflow:auto;padding:18px 18px 30px}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 18px}
+.key{--k:var(--k1);background:var(--card);border-radius:14px;padding:12px 6px;text-align:center;border:1px solid var(--line);animation:pop .4s both}
+.key b{display:block;font-size:24px;font-weight:900;color:var(--k)}
+.key span{font-size:11.5px;color:var(--ink2);font-weight:700}
+.key:nth-child(2){--k:var(--k2);animation-delay:.05s}.key:nth-child(3){--k:var(--k3);animation-delay:.1s}.key:nth-child(4){--k:var(--k4);animation-delay:.15s}
+.sec{--s:var(--g1);margin-bottom:14px;animation:fade .35s both}
+.sec h3{margin:0 0 7px 4px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+.box{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line);transition:background .15s}
+.kv:first-child{border-top:0}
+.kv:hover{background:var(--bg)}
+.kv .k{color:var(--ink2);font-size:14px}
+.kv .v{font-weight:800;font-variant-numeric:tabular-nums;font-size:15.5px}
+.v.blank{color:var(--ink3);font-weight:400}
+.on-off{font-size:11.5px;font-weight:800;letter-spacing:.05em;padding:3px 10px;border-radius:999px}
+.on-off.on{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.on-off.off{background:var(--line);color:var(--ink3)}
+.also{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.note{color:var(--ink3);font-size:12.5px;margin-top:6px;text-align:center}
+.p-foot{display:flex;gap:8px;padding:12px 16px;background:var(--glass);border-top:1px solid var(--line)}
+.btn{flex:1;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:11px 12px;font-weight:700;font-size:14px;transition:transform .12s,box-shadow .2s;position:relative;overflow:hidden}
+.btn:active{transform:scale(.95)}
+.btn.primary{background:var(--g1);border-color:var(--g1);color:#fff}
+.ripple{position:absolute;border-radius:50%;transform:scale(0);background:currentColor;opacity:.25;animation:rip .55s ease-out;pointer-events:none}
+@keyframes rip{to{transform:scale(3);opacity:0}}
+
+
+/* ---------- sleek homepage: top bar, hero, cards ---------- */
+body{background:radial-gradient(1100px 420px at 50% -160px,color-mix(in srgb,var(--g1) 14%,transparent),transparent 70%) no-repeat,var(--bg)}
+header.topbar{position:sticky;top:0;z-index:20;padding:0;text-align:left;color:#f8fafc;background:#0d1322;
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.tb-in{max-width:1080px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:12px}
+.tb-brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.tb-tile{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#141c2f;box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)}
+.tb-mark{width:36px;height:36px}
+.tb-text{display:flex;align-items:center;gap:12px;min-width:0}
+.tb-name{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;font-size:25px;font-weight:800;line-height:1;letter-spacing:-.035em;color:#fff;white-space:nowrap}
+.tb-name span{background:linear-gradient(180deg,#fef08a 0%,#facc15 45%,#f59e0b 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px rgba(250,204,21,.38));padding-right:.04em}
+.tb-sub{padding-left:12px;border-left:1px solid rgba(255,255,255,.18);font-size:14px;font-weight:600;letter-spacing:.01em;color:#cbd5e1;white-space:nowrap}
+header.topbar .tabs{margin:0;padding:3px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);box-shadow:none}
+header.topbar .tabs button{color:#cbd5e1;padding:7px 14px;font-size:14px}
+header.topbar .tabs button:hover{color:#fff}
+header.topbar .tabs button.on{background:#f8fafc;color:#0b1120}
+header.topbar .iconbtn{position:static;width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1);color:#e2e8f0;}
+.hero{text-align:center;padding:52px 0 18px;animation:fade .5s both}
+.hero h1{margin:0;font-size:clamp(32px,6vw,50px);font-weight:700;letter-spacing:-.035em;line-height:1.06;color:var(--ink)}
+.hero h1 span{color:var(--g1)}
+.hero p{margin:14px 0 0;color:var(--ink2);font-size:15px}
+.hero p span{color:var(--ink);font-weight:700}
+.sticky{top:58px}
+.search{border-radius:16px;box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.06)}
+.search .sicon{border-radius:10px}
+.card{border-radius:16px;box-shadow:none;padding:22px 14px 16px}
+.card::before{height:3px}
+.card{content-visibility:auto;contain-intrinsic-size:auto 200px}
+.card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(15,23,42,.10);border-color:color-mix(in srgb,var(--c) 35%,var(--line))}
+.card .fg{font-size:23px;font-weight:800;letter-spacing:-.03em}
+.card .tag{margin-top:12px;font-weight:600}
+.card .mini{margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
+#viewManage{padding-top:30px}
+@media (max-width:560px){
+  .tb-in{padding:8px 12px;gap:8px}
+  .tb-tile{width:36px;height:36px;border-radius:10px}.tb-mark{width:31px;height:31px}
+  .tb-text{flex-direction:column;align-items:flex-start;gap:3px}
+  .tb-name{font-size:20px}
+  .tb-sub{padding:0;border:0;font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fde68a}
+  header.topbar .tabs button{padding:6px 10px;font-size:13px}
+  header.topbar .iconbtn{width:32px;height:32px}
+  .hero{padding:34px 0 12px}.hero p{font-size:14px}
+  .sticky{top:50px}
+  /* one sideways-scrolling row of filter chips on phones */
+  .filters{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;margin:12px -16px 0;padding:0 16px 4px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 28px),transparent)}
+  .filters::-webkit-scrollbar{display:none}
+  .filters .sep{flex:0 0 1px;height:auto;background:var(--line);margin:4px 2px}
+  .filters .chip{flex:none}
+}
+
+/* LineUp wordmark "Rising caps" (Archivo Black; U and P step up) — drawn as shapes, no font needed */
+.tb-wordmark{display:block;height:25px;width:auto;color:#fff;overflow:visible}
+.intro-wordmark{display:block;height:clamp(46px,12vw,72px);width:auto;color:#f8fafc;margin:6px auto 10px;overflow:visible}
+@media (max-width:560px){ .tb-wordmark{height:20px} }
+@media (max-width:380px){ .tb-wordmark{height:16px} }
+
+/* "Updated …" row on cards */
+.card .upd{position:relative;margin-top:9px;font-size:11.5px;font-weight:600;color:var(--ink3)}
+.card .upd.recent{color:var(--g1)}
+.card .upd.recent::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--g1);margin-right:5px;vertical-align:1px}
+.note b{color:var(--ink2)}
+/* update history panel */
+.hist{display:none;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:visible;text-align:left}
+.h-wrap{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;border-radius:inherit}
+/* the pull tab on the panel's left edge: stays peeking out at the screen edge when the panel is collapsed */
+.hist-tab{position:absolute;left:-36px;top:18px;width:36px;padding:12px 0 14px;display:flex;flex-direction:column;align-items:center;gap:9px;
+  border:1px solid var(--line);border-right:0;border-radius:12px 0 0 12px;background:var(--glass);color:var(--ink2);box-shadow:-8px 6px 18px -10px rgba(15,23,42,.35);transition:color .15s}
+.hist-tab:hover{color:var(--g1)}
+.hist-tab svg{transform:rotate(180deg);transition:transform .34s cubic-bezier(.2,.8,.2,1)}
+.hist-tab .lbl{writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.hist-tab .n{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--g1);color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center}
+.hist-tab .n:empty{display:none}
+.h-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 14px 11px;border-bottom:1px solid var(--line)}
+.h-head b{display:block;font-size:15px}.h-head small{font-size:12px;color:var(--ink3);font-weight:600}
+.h-close{width:30px;height:30px;border-radius:9px}
+.no-anim *,.no-anim *::before{transition:none!important}
+.h-list{overflow:auto;padding:4px 8px 10px;flex:1;min-height:0}
+.h-day{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding:12px 8px 4px}
+.h-item{display:flex;align-items:flex-start;gap:9px;width:100%;text-align:left;border:0;background:none;padding:8px;border-radius:10px;transition:background .12s}
+button.h-item:hover{background:var(--bg)}
+.h-item .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--c,var(--ink3));margin-top:6px}
+.h-item.base .dot{background:var(--ink3)}
+.h-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.h-t{font-size:13.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.h-t b{color:var(--ink)}
+.h-main small{font-size:11.5px;color:var(--ink3)}.h-main em{font-style:normal;font-weight:700;color:var(--warn)}
+.h-f{color:var(--ink2)!important}
+.h-act{flex:none;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:999px;margin-top:2px}
+.h-act.edited{background:color-mix(in srgb,var(--g1) 13%,var(--card));color:var(--g1)}
+.h-act.added{background:color-mix(in srgb,var(--ok) 14%,var(--card));color:var(--ok)}
+.h-act.removed{background:color-mix(in srgb,#dc2626 12%,var(--card));color:#dc2626}
+.h-act.restored,.h-act.base{background:var(--bg);color:var(--ink2)}
+.h-more{margin:8px auto 2px;font-size:13px;padding:6px 14px}
+.h-foot{padding:10px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--ink2);background:var(--bg)}
+@media (min-width:1180px){
+  /* docked sidebar: full height on the right, under the top bar; the page is centred in the space left of it */
+  .wrap,footer{margin-right:var(--side-now);transition:margin-right .34s cubic-bezier(.2,.8,.2,1)}
+  .hist-hidden{--side-now:36px}
+  .wrap{max-width:none;padding:0 28px}
+  .wrap>section{max-width:1080px;margin:0 auto}
+  .hist{display:flex;position:fixed;top:58px;right:0;bottom:0;width:var(--side);z-index:7;border:0;border-left:1px solid var(--line);border-radius:0;box-shadow:none;background:var(--glass);
+    transition:transform .34s cubic-bezier(.2,.8,.2,1)}
+  .hist-hidden .hist{transform:translateX(100%)}
+  .hist-hidden .hist-tab svg{transform:none}
+  .h-head{padding:16px 18px 12px}
+  .h-list{padding:4px 10px 14px}
+  .h-close{display:none}
+  /* app-style header: logo at the far left, tabs at the far right */
+  .tb-in{max-width:none;padding:9px 24px}
+  /* the pinned search strip spans the page area and meets the sidebar's edge */
+  .sticky::before{top:0;bottom:0;left:calc((100% - 100vw + var(--side-now)) / 2);right:calc((100% - 100vw + var(--side-now)) / 2 - 20px);border-radius:0;
+    transition:opacity .2s,left .34s cubic-bezier(.2,.8,.2,1),right .34s cubic-bezier(.2,.8,.2,1)}
+}
+@media (min-width:1500px){ :root{--side:330px} }
+@media (max-width:1179.98px){
+  .hist{display:flex;position:fixed;right:12px;top:70px;bottom:12px;width:min(340px,calc(100% - 60px));z-index:19;box-shadow:none;
+    transform:translateX(calc(100% + 12px));transition:transform .34s cubic-bezier(.2,.8,.2,1),box-shadow .34s cubic-bezier(.2,.8,.2,1)}
+  .hist.open{transform:none;box-shadow:0 24px 60px rgba(15,23,42,.30)}
+  .hist:not(.open) .hist-tab svg{transform:none}
+  .h-close .hide{display:none}
+}
+
+/* recipe window laid out like the printout (screen only; the printout keeps its own rules) */
+@media screen{
+  .panel.view{width:min(1000px,calc(100% - 32px))}
+  .panel.view .p-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:6px 20px;text-align:left;padding:22px 70px 18px 28px;border-top:5px solid var(--c)}
+  .panel.view .p-kicker{display:block;grid-column:1/-1;font-size:10.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3)}
+  .panel.view .p-name{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .panel.view .p-fg{font-size:46px;letter-spacing:-.03em}
+  .panel.view .p-bulk{font-size:21px;margin:0}
+  .panel.view .p-size{display:block;text-align:right}
+  .panel.view .p-size .pill{display:inline-block;background:var(--c);color:#fff;font-weight:800;font-size:14.5px;padding:7px 16px;border-radius:999px}
+  .panel.view .p-size .paper{display:block;margin-top:5px;font-size:12px;color:var(--ink3);font-weight:600}
+  .panel.view .p-tag{display:none}
+  .panel.view .p-body{padding:22px 28px 26px;columns:2;column-gap:40px}
+  .panel.view .keys{column-span:all;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 22px}
+  .panel.view .key{border:0;border-radius:14px;padding:14px 16px 12px;text-align:left;background:color-mix(in srgb,var(--c) 13%,var(--card))}
+  .panel.view .key b{font-size:34px;font-weight:900;line-height:1.05;color:var(--ink)}
+  .panel.view .key span{display:block;margin-top:3px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+  .panel.view .sec{break-inside:avoid;margin:0 0 20px}
+  .panel.view .sec h3{display:flex;align-items:center;gap:8px;margin:0 0 4px;padding:0 0 6px;font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--ink);border-bottom:2px solid var(--ink)}
+  .panel.view .sec h3::before{content:"";flex:none;width:9px;height:9px;border-radius:2px;background:var(--c)}
+  .panel.view .box{border:0;border-radius:0;background:none;overflow:visible}
+  .panel.view .kv{padding:9px 2px;border-top:0;border-bottom:1px solid var(--line)}
+  .panel.view .kv:last-child{border-bottom:0}
+  .panel.view .kv .k{font-size:15px}
+  .panel.view .kv .v{font-size:18px;font-weight:800}
+  .panel.view .on-off{font-size:12px;padding:3px 11px}
+  .panel.view .also-sec,.panel.view .note{column-span:all}
+  .panel.view .also{justify-content:flex-start}
+  .panel.view .note{margin-top:4px;padding-top:12px;border-top:1px solid var(--line);text-align:left;font-size:13px}
+}
+@media screen and (max-width:720px){
+  .panel.view{width:calc(100% - 20px)}
+  .panel.view .p-head{grid-template-columns:1fr;padding:18px 58px 14px 18px}
+  .panel.view .p-size{text-align:left}
+  .panel.view .p-fg{font-size:38px}.panel.view .p-bulk{font-size:18px}
+  .panel.view .p-body{columns:1;padding:16px 18px 22px}
+  .panel.view .keys{grid-template-columns:repeat(2,1fr);gap:8px}
+  .panel.view .key b{font-size:28px}
+}
+
+/* quick "How to use" guide */
+header.topbar .help-btn{font-size:17px;font-weight:800;line-height:1}
+.guide[hidden]{display:none!important}
+.g-box{max-width:480px;max-height:calc(100dvh - 32px);overflow:auto;padding:20px 20px 18px}
+.g-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.g-head h2{margin:0;font-size:21px}
+.g-x{width:34px;height:34px;border-radius:10px;font-size:15px}
+.g-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.g-list li{display:flex;gap:12px;align-items:flex-start;padding:10px 10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.g-ico{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:19px;background:color-mix(in srgb,var(--g1) 10%,var(--card))}
+.g-t{display:block;font-size:15px;margin:1px 0 2px}
+.g-list li p{margin:0;font-size:13.5px;color:var(--ink2);line-height:1.45}
+.g-list p b{color:var(--ink)}
+.g-sup{margin:14px 2px 6px;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.g-tip{margin:12px 0 14px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--ok) 12%,var(--card));color:var(--ink);font-size:13.5px;font-weight:600}
+.hero-help{display:inline-block;margin-top:10px;border:0;background:none;padding:4px 6px;color:var(--g1);font-weight:700;font-size:14px;cursor:pointer}
+.hero-help:hover{text-decoration:underline}
+@media (max-width:400px){ header.topbar .help-btn{display:none} }
+
+/* in-page confirm + "printing is blocked" dialogs */
+.cf-box{max-width:380px}.cf-msg{color:var(--ink)!important;font-size:15px!important;line-height:1.5;margin:0 0 16px!important}
+.btn.cf-danger{background:#dc2626;border-color:#dc2626;color:#fff}
+.pb-box{max-width:460px}.pb-box h2{margin:0 0 6px;font-size:19px}
+.pb-steps{margin:0 0 12px;padding-left:22px;color:var(--ink2);font-size:14px;line-height:1.5}.pb-steps b{color:var(--ink)}
+.pb-or{margin:0 0 8px!important;font-size:13px!important}
+.m-warn{max-width:720px;margin:0 auto 14px;padding:11px 14px;border-radius:12px;background:var(--warn-bg);color:var(--ink);font-size:13.5px;line-height:1.45;border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
+
+/* tabs + suggestions */
+.tabs{display:flex;gap:4px;margin:0 auto 14px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;width:max-content;box-shadow:var(--shadow)}
+.tabs button{border:0;background:none;padding:8px 18px;border-radius:999px;font-weight:700;color:var(--ink2);display:inline-flex;gap:8px;align-items:center;transition:background .2s,color .2s}
+.tabs button.on{background:var(--g1);color:#fff}
+[hidden]{display:none!important}
+.hint{background:color-mix(in srgb,var(--g1) 9%,var(--card));border:1px solid color-mix(in srgb,var(--g1) 25%,transparent);border-radius:12px;padding:11px 14px;font-size:14px;color:var(--ink2);margin-bottom:14px;text-align:center}
+.hint b{color:var(--ink);display:block;font-size:15px;margin-bottom:2px}
+.field{display:block;margin-bottom:14px}
+.field>span{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;display:block;margin:0 0 6px 4px}
+.inp{width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:11px 12px;font:inherit;outline:0;resize:vertical;transition:border-color .15s,box-shadow .15s}
+.inp:focus,.vin:focus{border-color:var(--g1);box-shadow:0 0 0 3px color-mix(in srgb,var(--g1) 18%,transparent)}
+.kv .ed{display:flex;align-items:center;gap:7px;flex:none}
+.kv .old,.kv .arrow{display:none;color:var(--ink3);font-size:13px}
+.kv .old{text-decoration:line-through}
+.kv.chg{background:color-mix(in srgb,var(--g1) 8%,var(--card))}
+.kv.chg .old,.kv.chg .arrow{display:inline}
+.vin{width:84px;text-align:right;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:9px;padding:6px 9px;font:inherit;font-weight:800;outline:0;transition:border-color .15s,box-shadow .15s}
+select.vin{text-align:left;padding-right:4px}
+.kv.chg .vin{border-color:var(--g1);color:var(--g1)}
+.btn.grow{flex:1.6}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.danger{color:#dc2626}
+.lock-wrap{display:grid;place-items:center;padding:16px 0}
+.lock-card{max-width:430px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:26px 22px;text-align:center;animation:pop .35s both}
+.lock-ico{font-size:40px;line-height:1}
+.lock-card h2{margin:8px 0 4px;font-size:20px}
+.lock-card p{color:var(--ink2);font-size:14px;margin:0 0 16px}
+.lock-form{display:flex;gap:8px}
+.lock-form .inp{flex:1;text-align:left}
+.lock-form .btn.grow{flex:0 0 auto}
+.lock-err{color:#dc2626;font-weight:700;font-size:13px;margin-top:10px}
+.lock-note{color:var(--ink3);font-size:12px;margin-top:14px;line-height:1.45}
+.pw-modal{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,10,40,.45);opacity:0;transition:opacity .2s}
+.pw-modal.show{opacity:1}
+.pw-box{width:100%;max-width:400px;background:var(--bg);border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.3);padding:22px;transform:scale(.96);transition:transform .2s}
+.pw-modal.show .pw-box{transform:none}
+.pw-box h2{margin:0 0 4px;font-size:19px}
+.pw-box p{color:var(--ink2);font-size:14px;margin:0 0 14px}
+.pw-box code{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:12px}
+.pw-box .inp{margin-bottom:10px}
+.pw-box .inp.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all}
+.pw-acts{display:flex;gap:8px;margin-top:4px}
+.ps{display:none}
+.s-tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px}
+.s-tools small{opacity:.75;font-weight:600}
+.s-info{text-align:center;color:var(--ink3);font-size:12.5px;margin:2px auto 16px;max-width:640px}
+.chip[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+.m-search{margin:6px auto 4px;max-width:560px;animation:none}
+.m-search input{padding:12px 0;font-size:16px}
+.m-list{max-width:720px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.m-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--line)}
+.m-row:first-child{border-top:0}
+.m-row .dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--c)}
+.m-main{flex:1;min-width:0;text-align:left}
+.m-main b{font-size:16px}.m-main span{color:var(--ink2);font-weight:600;margin-left:4px}
+.m-sub{font-size:12.5px;color:var(--ink3);margin-top:1px}
+.m-st{font-style:normal;font-weight:800;padding:1px 8px;border-radius:999px;font-size:11px}
+.m-st.new{background:color-mix(in srgb,var(--ok) 14%,var(--card));color:var(--ok)}
+.m-st.edited{background:var(--warn-bg);color:var(--warn)}
+.m-row .btn{flex:none;padding:7px 12px;font-size:13px}
+.m-removed{max-width:720px;margin:14px auto 0;text-align:left}
+.m-removed summary{cursor:pointer;color:var(--ink2);font-weight:700;font-size:14px;padding:8px 4px}
+.m-removed .m-row{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-top:6px;opacity:.8}
+.m-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.m-grid .field{margin-bottom:10px}
+.m-edit{border-top-color:var(--c)}
+@media (max-width:560px){ .m-row{flex-wrap:wrap}.m-main{flex-basis:calc(100% - 24px)}.m-row .btn{flex:1} }
+
+
+.toast{position:fixed;left:50%;bottom:84px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px;z-index:50;transition:all .25s cubic-bezier(.2,.9,.3,1.3);pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:560px){
+  .panel{width:calc(100% - 20px);max-height:calc(100dvh - 20px);border-radius:18px}
+  header{padding-top:30px}header .iconbtn{top:24px}
+  .grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .card{padding:16px 8px 14px}.card .fg{font-size:20px}
+  .keys{grid-template-columns:repeat(2,1fr)}
+  .p-fg{font-size:34px}
+}
+@media (max-width:380px){
+  .tb-in{gap:6px;padding:8px 10px}.tb-tile{width:32px;height:32px;border-radius:9px}.tb-mark{width:27px;height:27px}
+  .tb-name{font-size:18px}.tb-sub{font-size:8.5px;letter-spacing:.08em}
+  header.topbar .tabs button{padding:6px 8px;font-size:12.5px;white-space:nowrap}
+  header.topbar .iconbtn{width:30px;height:30px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.print-only{display:none}
+/* ---------- Intro (same as LineUp): plays when the app is opened ---------- */
+/* Timeline (seconds): 0.00 belt draws in · 0.10-1.00 bottles ride in ·
+   0.95-1.35 cap drops · 1.15 "Welcome to" · 1.30 name and ready ring ·
+   2.60 fades into the app. */
+.intro-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  background: radial-gradient(circle at 50% 58%, #1e3a8a 0%, #0f172a min(75vw, 520px));
+  color: #f8fafc;
+  cursor: pointer;
+  overflow: hidden;
+}
+.intro-stage {
+  width: 100%;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.intro-welcome {
+  font-size: clamp(18px, 5vw, 26px);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: #fde047;
+}
+.intro-name {
+  font-family: "Barlow Semi Condensed", "Segoe UI", system-ui, sans-serif;
+  font-size: clamp(42px, 11vw, 64px);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+.intro-up {
+  color: #facc15;
+}
+.intro-tag {
+  font-size: clamp(13px, 3.6vw, 16px);
+  color: #94a3b8;
+  text-align: center;
+}
+.intro-scene {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 6px;
+}
+.intro-skip {
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+.intro-belt {
+  fill: #1e293b;
+  stroke: #334155;
+  stroke-width: 1.5;
+}
+.intro-track {
+  fill: none;
+  stroke: #334155;
+  stroke-width: 2;
+  stroke-dasharray: 10 12;
+}
+.intro-leg {
+  fill: #475569;
+}
+.intro-roller {
+  fill: #475569;
+  stroke: #334155;
+  stroke-width: 1.5;
+}
+.intro-spoke {
+  stroke: #1e293b;
+  stroke-width: 2;
+}
+.intro-glass {
+  fill: url(#intro-glass);
+  stroke: #c98142;
+  stroke-opacity: 0.5;
+  stroke-width: 1;
+}
+.intro-shine {
+  fill: #ffffff;
+  opacity: 0.5;
+}
+.intro-spec {
+  fill: #ffffff;
+  opacity: 0.75;
+}
+.intro-label {
+  fill: #fde047;
+  stroke: #ca8a04;
+  stroke-opacity: 0.35;
+  stroke-width: 0.75;
+}
+.intro-cap {
+  fill: #facc15;
+}
+.intro-ridge {
+  stroke: #ca8a04;
+  stroke-width: 1.5;
+}
+.intro-ring {
+  fill: none;
+  stroke: #4ade80;
+  stroke-width: 2.5;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.intro-roller-spin {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.intro-splash .intro-belt-group {
+  animation: intro-belt-in 0.3s ease-out both;
+  transform-origin: 240px 198px;
+}
+.intro-splash .intro-slide {
+  animation: intro-slide-in 0.9s cubic-bezier(0.16, 0.84, 0.3, 1) 0.1s both;
+}
+.intro-splash .intro-track {
+  animation: intro-belt-run 0.9s cubic-bezier(0.16, 0.84, 0.3, 1) 0.1s both;
+}
+.intro-splash .intro-roller-spin {
+  animation: intro-spin 0.9s cubic-bezier(0.16, 0.84, 0.3, 1) 0.1s both;
+}
+.intro-splash .intro-cap-drop {
+  animation: intro-cap-drop 0.4s 0.95s both;
+}
+.intro-splash .intro-ring {
+  animation: intro-ring 0.6s ease-out 1.3s;
+}
+.intro-splash .intro-welcome {
+  animation: intro-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 1.15s both;
+}
+.intro-splash .intro-name {
+  animation: intro-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 1.3s both;
+}
+.intro-splash .intro-tag {
+  animation: intro-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 1.45s both;
+}
+.intro-splash .intro-skip {
+  animation: intro-fade-in 0.4s ease 0.5s both;
+}
+.intro-splash.leaving {
+  animation: intro-out 0.45s ease forwards;
+}
+.intro-splash.leaving .intro-stage {
+  animation: intro-grow 0.45s ease forwards;
+}
+.intro-splash.skipping {
+  animation: intro-out 0.2s ease forwards;
+}
+@keyframes intro-belt-in {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+@keyframes intro-slide-in {
+  from {
+    transform: translateX(-340px);
+  }
+}
+@keyframes intro-belt-run {
+  from {
+    stroke-dashoffset: 340;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes intro-spin {
+  from {
+    transform: rotate(-2435deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+@keyframes intro-cap-drop {
+  0% {
+    transform: translateY(-120px);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.5, 0, 1, 1);
+  }
+  20% {
+    opacity: 1;
+  }
+  65% {
+    transform: translateY(0);
+    animation-timing-function: ease-out;
+  }
+  80% {
+    transform: translateY(-7px);
+    animation-timing-function: ease-in;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes intro-ring {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@keyframes intro-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes intro-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes intro-grow {
+  to {
+    transform: scale(1.04);
+  }
+}
+/* the sub-app name under "LineUp" */
+.intro-sub{display:inline-flex;align-items:center;gap:10px;margin-top:2px;padding:5px 16px;border-radius:999px;border:1px solid rgba(250,204,21,.45);background:rgba(250,204,21,.1);color:#fde68a;font-size:clamp(15px,4.2vw,19px);font-weight:700;letter-spacing:.6px}
+.intro-splash .intro-sub{animation:intro-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 1.45s both}
+.intro-splash{display:none!important}
+.intro-on .intro-splash{display:flex!important}
+.intro-on body{overflow:hidden}
+@media print{ .intro-splash{display:none!important} }
+@page{size:auto;margin:12mm 12mm 10mm}
+@media print{
+  .ps{color:#14161d;font-size:12px}
+  .ps-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding-bottom:10px;border-bottom:1px solid #d9dce3}
+  .ps-kicker{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#8a90a0;margin-bottom:4px}
+  .ps-fg{font-size:34px;font-weight:900;letter-spacing:-.03em;line-height:.95}
+  .ps-bulk{font-size:17px;font-weight:600;color:#5b6172;margin-left:12px}
+  .ps-size{text-align:right}
+  .ps-pill{display:inline-block;background:var(--c);color:#fff;font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px}
+  .ps-paper{display:block;margin-top:4px;font-size:10px;color:#8a90a0;font-weight:600}
+  .ps-meta{display:grid;grid-template-columns:1.3fr 1fr 1.3fr;gap:16px;margin:10px 0 2px}
+  .ps-meta div{border-bottom:1.5px solid #14161d;padding-bottom:3px}
+  .ps-meta span{display:block;font-size:8.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a90a0}
+  .ps-meta b{display:block;font-size:14px;min-height:22px;padding-top:4px}
+  .ps-h{display:flex;align-items:center;gap:7px;font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin:11px 0 4px;padding-bottom:3px;border-bottom:2px solid #14161d}
+  .ps-h::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--c)}
+  .ps-tab{width:100%;border-collapse:collapse}
+  .ps-tab th{text-align:left;font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8a90a0;padding:3px 8px;border-bottom:1px solid #d9dce3}
+  .ps-tab td{padding:4px 8px;border-bottom:1px solid #eceef2;font-size:13px}
+  .ps-tab .r{text-align:right}
+  .ps-tab td.g{color:#8a90a0;font-size:11px}
+  .ps-tab td.cur{color:#8a90a0;text-decoration:line-through}
+  .ps-tab td.new span{display:inline-block;font-weight:900;font-size:15px;padding:1px 10px;border-radius:7px;background:color-mix(in srgb,var(--c) 16%,#fff)}
+  .ps-note{min-height:36px;border:1px solid #d9dce3;border-radius:8px;padding:8px 10px;font-size:13px;white-space:pre-wrap}
+  .ps-cols{columns:2;column-gap:24px}
+  .ps-sec{break-inside:avoid;margin-bottom:5px}
+  .ps-sec h4{margin:0 0 1px;font-size:8.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#5b6172}
+  .ps-kv{display:flex;justify-content:space-between;gap:8px;font-size:10px;padding:1px 5px;border-bottom:1px solid #f0f1f4}
+  .ps-kv span{color:#4b5161}.ps-kv b{font-weight:800}
+  .ps-kv.chg{background:color-mix(in srgb,var(--c) 16%,#fff);border-radius:4px}
+  .ps-kv.chg span{color:#14161d;font-weight:700}
+  .ps-kv s{color:#8a90a0;font-weight:400;margin-right:6px}
+  .ps-foot{display:flex;justify-content:space-between;gap:16px;margin-top:10px;padding-top:6px;border-top:1px solid #d9dce3;font-size:8.5px;color:#8a90a0}
+  .ps.many .ps-tab td{padding:2.5px 8px;font-size:12px}
+  .ps.many .ps-tab td.new span{font-size:13.5px;padding:0 8px}
+  .ps.many .ps-kv{font-size:9.5px;padding:.5px 5px}
+  .ps.many .ps-h{margin:8px 0 3px}
+  .ps.many .ps-sec{margin-bottom:3px}
+  .ps.lots .ps-cols{columns:3;column-gap:16px}
+  .ps.lots .ps-kv{font-size:9px}
+  html,body{background:#fff!important;color:#14161d}
+  *{animation:none!important;transition:none!important;box-shadow:none!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .bgfx,.topbar,.hist,.wrap,footer,.scrim,.p-foot,.iconbtn,.toast,.sec.also-sec,.note,.p-tag,.sbanner{display:none!important}
+  .print-only{display:block}
+  body.print-sugg .panel,body.print-sugg .scrim{display:none!important}
+  body.print-sugg .ps{display:block}
+  .panel{position:static;transform:none!important;opacity:1;visibility:visible;width:100%;max-height:none;border-radius:0;overflow:visible;background:#fff;display:block}
+  /* header */
+  .p-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:4px 16px;text-align:left;padding:0 0 12px;border:0;border-bottom:1px solid #d9dce3;background:#fff}
+  .p-kicker{grid-column:1/-1;font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#8a90a0}
+  .p-name{display:flex;align-items:baseline;gap:12px}
+  .p-fg{font-size:40px;font-weight:900;letter-spacing:-.03em;line-height:.95}
+  .p-bulk{font-size:18px;font-weight:600;color:#5b6172;margin:0}
+  .p-size{text-align:right}
+  .p-size .pill{display:inline-block;background:var(--c);color:#fff;font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px}
+  .p-size .paper{display:block;margin-top:4px;font-size:10px;color:#8a90a0;font-weight:600}
+  /* key numbers */
+  .p-body{overflow:visible;padding:14px 0 0}
+  .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 16px}
+  .key{border:0;border-radius:12px;padding:10px 12px;text-align:left;background:color-mix(in srgb,var(--c) 10%,#fff)}
+  .key b{font-size:26px;font-weight:900;color:#14161d;line-height:1.05}
+  .key span{display:block;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#5b6172;margin-top:2px}
+  /* settings */
+  .p-body{columns:2;column-gap:28px}
+  .keys,.p-print-foot{column-span:all}
+  .sec{break-inside:avoid;margin:0 0 12px}
+  .sec h3{display:flex;align-items:center;gap:7px;font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#14161d;margin:0 0 4px;padding-bottom:4px;border-bottom:2px solid #14161d}
+  .sec h3::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--c)}
+  .box{border:0;border-radius:0;background:none}
+  .kv{padding:4px 2px;border-top:0;border-bottom:1px solid #eceef2}
+  .kv:last-child{border-bottom:0}
+  .kv .k{font-size:12px;color:#4b5161}.kv .v{font-size:13.5px;font-weight:800;color:#14161d}
+  .v.blank{color:#b0b5c0}
+  .on-off{font-size:10px;padding:1px 8px;border-radius:999px}
+  .on-off.on{background:#dcf5e9!important;color:#08794a}
+  .on-off.off{background:#eef0f3!important;color:#8a90a0}
+  /* footer */
+  .p-print-foot{display:flex;justify-content:space-between;gap:16px;margin-top:6px;padding-top:8px;border-top:1px solid #d9dce3;font-size:9px;color:#8a90a0}
+  .p-print-foot b{color:#5b6172}
+}
+.sync{display:inline-flex;align-items:center;gap:6px;margin-left:6px;font-size:12.5px;font-weight:600!important;color:var(--ink3)!important;white-space:nowrap}
+.sync::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ink3)}
+.sync.synced::before{background:var(--ok)}.sync.saving::before{background:var(--c-y)}.sync.offline::before,.sync.error::before{background:var(--warn)}
+.sync.error{color:var(--warn)!important}
+.acct span{font-weight:800;font-size:14px;line-height:1}
+.lock-form.col{flex-direction:column}.lock-form.col .btn.grow{flex:1 1 auto}
+#viewAuth .lock-wrap{min-height:52vh}
+.gated{--side-now:0px}
+</style>
+</head>
+<body>
+<div class="intro-splash" id="intro" aria-hidden="true">
+  <div class="intro-stage">
+    <div class="intro-welcome">Welcome to</div>
+    <div class="intro-name"><svg class="intro-wordmark" viewBox="5.4 -92.8 426.5 94.8" role="img" aria-label="LineUp"><path d="M7.4 0.0V-68.8H29.5V-17.6H64.8V0.0Z" fill="currentColor"/><path d="M77.60000000000001 0.0V-68.8H99.7V0.0Z" fill="currentColor"/><path d="M118.0 0.0V-68.8H136.8L158.2 -44.1Q159.1 -43.1 160.6 -41.2Q162.1 -39.300000000000004 163.64999999999998 -37.35Q165.2 -35.4 166.0 -34.2L166.5 -34.4Q166.4 -37.2 166.4 -39.95Q166.4 -42.7 166.4 -44.1V-68.8H186.5V0.0H167.8L143.7 -27.5Q142.0 -29.5 140.8 -31.150000000000002Q139.6 -32.800000000000004 138.5 -34.300000000000004L138.0 -34.1Q138.1 -32.2 138.1 -30.300000000000004Q138.1 -28.400000000000002 138.1 -27.5V0.0Z" fill="currentColor"/><path d="M205.1 0.0V-68.8H264.6V-52.300000000000004H227.20000000000002V-42.800000000000004H259.2V-27.0H227.20000000000002V-16.5H265.3V0.0Z" fill="currentColor"/><path d="M314.8 -9.8Q304.0 -9.8 296.35 -13.05Q288.70000000000005 -16.3 284.6 -22.75Q280.5 -29.2 280.5 -38.7V-79.8H302.6V-39.0Q302.6 -33.5 305.6 -29.9Q308.6 -26.3 314.70000000000005 -26.3Q320.8 -26.3 323.85 -29.9Q326.90000000000003 -33.5 326.90000000000003 -39.0V-79.8H349.0V-38.7Q349.0 -29.2 344.95000000000005 -22.75Q340.90000000000003 -16.3 333.25 -13.05Q325.6 -9.8 314.8 -9.8Z" fill="var(--wm-gold,#facc15)"/><path d="M367.3 -22.0V-90.8H407.90000000000003Q414.40000000000003 -90.8 419.35 -87.85Q424.30000000000007 -84.9 427.1 -79.7Q429.90000000000003 -74.5 429.90000000000003 -67.6Q429.90000000000003 -60.5 427.05000000000007 -55.25Q424.20000000000005 -50.0 419.25000000000006 -47.1Q414.30000000000007 -44.2 407.90000000000003 -44.2H389.40000000000003V-22.0ZM389.40000000000003 -60.300000000000004H400.50000000000006Q404.00000000000006 -60.300000000000004 405.75000000000006 -62.10000000000001Q407.50000000000006 -63.900000000000006 407.50000000000006 -67.4Q407.50000000000006 -69.80000000000001 406.75000000000006 -71.35000000000001Q406.00000000000006 -72.9 404.45000000000005 -73.7Q402.90000000000003 -74.5 400.50000000000006 -74.5H389.40000000000003Z" fill="var(--wm-gold,#facc15)"/></svg></div>
+    <div class="intro-sub">Cremer Recipes</div>
+    <svg class="intro-scene" viewBox="0 0 480 250">
+      <defs><linearGradient id="intro-glass" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2b1407"/><stop offset="0.18" stop-color="#7c3f17"/><stop offset="0.34" stop-color="#b86a30"/><stop offset="0.52" stop-color="#7c3f17"/><stop offset="0.8" stop-color="#4a230c"/><stop offset="1" stop-color="#2b1407"/></linearGradient></defs>
+      <g class="intro-belt-group">
+        <rect class="intro-leg" x="96" y="206" width="8" height="34" rx="2"/>
+        <rect class="intro-leg" x="376" y="206" width="8" height="34" rx="2"/>
+        <rect class="intro-belt" x="58" y="190" width="364" height="16" rx="8"/>
+        <line class="intro-track" x1="70" y1="198" x2="410" y2="198"/>
+        <g transform="translate(72 198)"><g class="intro-roller-spin"><circle class="intro-roller" r="7"/><line class="intro-spoke" x1="-5" y1="0" x2="5" y2="0"/></g></g>
+        <g transform="translate(408 198)"><g class="intro-roller-spin"><circle class="intro-roller" r="7"/><line class="intro-spoke" x1="-5" y1="0" x2="5" y2="0"/></g></g>
+      </g>
+      <g transform="translate(150 190)"><g class="intro-slide">
+        <rect class="intro-glass" x="-13" y="-72" width="26" height="12" rx="3"/>
+        <rect class="intro-glass" x="-22" y="-63" width="44" height="63" rx="9"/>
+        <rect class="intro-shine" x="-16" y="-58" width="4" height="50" rx="2"/>
+        <circle class="intro-spec" cx="-9" cy="-55" r="2"/>
+        <rect class="intro-label" x="-22" y="-44" width="44" height="24"/>
+<rect class="intro-cap" x="-15" y="-84" width="30" height="13" rx="3"/><line class="intro-ridge" x1="-8" y1="-82" x2="-8" y2="-73"/><line class="intro-ridge" x1="0" y1="-82" x2="0" y2="-73"/><line class="intro-ridge" x1="8" y1="-82" x2="8" y2="-73"/>      </g></g>
+      <g transform="translate(240 190)"><g class="intro-slide">
+        <rect class="intro-glass" x="-13" y="-72" width="26" height="12" rx="3"/>
+        <rect class="intro-glass" x="-22" y="-63" width="44" height="63" rx="9"/>
+        <rect class="intro-shine" x="-16" y="-58" width="4" height="50" rx="2"/>
+        <circle class="intro-spec" cx="-9" cy="-55" r="2"/>
+        <rect class="intro-label" x="-22" y="-44" width="44" height="24"/>
+      </g><g class="intro-cap-drop"><rect class="intro-cap" x="-15" y="-84" width="30" height="13" rx="3"/><line class="intro-ridge" x1="-8" y1="-82" x2="-8" y2="-73"/><line class="intro-ridge" x1="0" y1="-82" x2="0" y2="-73"/><line class="intro-ridge" x1="8" y1="-82" x2="8" y2="-73"/></g><circle class="intro-ring" cx="0" cy="-78" r="22"/></g>
+      <g transform="translate(330 190)"><g class="intro-slide">
+        <rect class="intro-glass" x="-13" y="-72" width="26" height="12" rx="3"/>
+        <rect class="intro-glass" x="-22" y="-63" width="44" height="63" rx="9"/>
+        <rect class="intro-shine" x="-16" y="-58" width="4" height="50" rx="2"/>
+        <circle class="intro-spec" cx="-9" cy="-55" r="2"/>
+        <rect class="intro-label" x="-22" y="-44" width="44" height="24"/>
+<rect class="intro-cap" x="-15" y="-84" width="30" height="13" rx="3"/><line class="intro-ridge" x1="-8" y1="-82" x2="-8" y2="-73"/><line class="intro-ridge" x1="0" y1="-82" x2="0" y2="-73"/><line class="intro-ridge" x1="8" y1="-82" x2="8" y2="-73"/>      </g></g>
+    </svg>
+    <div class="intro-skip">Click anywhere to skip</div>
+  </div>
+</div>
+<header class="topbar"><div class="tb-in">
+  <div class="tb-brand"><span class="tb-tile"><svg class="tb-mark" viewBox="0 0 64 64" aria-hidden="true"><rect x="7.5" y="33" width="15" height="16" rx="3.5" fill="#d97706"/><rect x="11.5" y="30" width="7" height="3.5" fill="#d97706"/><rect x="9.5" y="25.5" width="11" height="5" rx="2" fill="#facc15"/><rect x="24.5" y="26" width="15" height="23" rx="3.5" fill="#d97706"/><rect x="28.5" y="23" width="7" height="3.5" fill="#d97706"/><rect x="26.5" y="18.5" width="11" height="5" rx="2" fill="#facc15"/><rect x="41.5" y="19" width="15" height="30" rx="3.5" fill="#d97706"/><rect x="45.5" y="16" width="7" height="3.5" fill="#d97706"/><rect x="43.5" y="11.5" width="11" height="5" rx="2" fill="#facc15"/><rect x="5" y="51.5" width="54" height="4.5" rx="2.25" fill="#facc15"/></svg></span><div class="tb-text"><svg class="tb-wordmark" viewBox="5.4 -92.8 426.5 94.8" role="img" aria-label="LineUp"><path d="M7.4 0.0V-68.8H29.5V-17.6H64.8V0.0Z" fill="currentColor"/><path d="M77.60000000000001 0.0V-68.8H99.7V0.0Z" fill="currentColor"/><path d="M118.0 0.0V-68.8H136.8L158.2 -44.1Q159.1 -43.1 160.6 -41.2Q162.1 -39.300000000000004 163.64999999999998 -37.35Q165.2 -35.4 166.0 -34.2L166.5 -34.4Q166.4 -37.2 166.4 -39.95Q166.4 -42.7 166.4 -44.1V-68.8H186.5V0.0H167.8L143.7 -27.5Q142.0 -29.5 140.8 -31.150000000000002Q139.6 -32.800000000000004 138.5 -34.300000000000004L138.0 -34.1Q138.1 -32.2 138.1 -30.300000000000004Q138.1 -28.400000000000002 138.1 -27.5V0.0Z" fill="currentColor"/><path d="M205.1 0.0V-68.8H264.6V-52.300000000000004H227.20000000000002V-42.800000000000004H259.2V-27.0H227.20000000000002V-16.5H265.3V0.0Z" fill="currentColor"/><path d="M314.8 -9.8Q304.0 -9.8 296.35 -13.05Q288.70000000000005 -16.3 284.6 -22.75Q280.5 -29.2 280.5 -38.7V-79.8H302.6V-39.0Q302.6 -33.5 305.6 -29.9Q308.6 -26.3 314.70000000000005 -26.3Q320.8 -26.3 323.85 -29.9Q326.90000000000003 -33.5 326.90000000000003 -39.0V-79.8H349.0V-38.7Q349.0 -29.2 344.95000000000005 -22.75Q340.90000000000003 -16.3 333.25 -13.05Q325.6 -9.8 314.8 -9.8Z" fill="var(--wm-gold,#facc15)"/><path d="M367.3 -22.0V-90.8H407.90000000000003Q414.40000000000003 -90.8 419.35 -87.85Q424.30000000000007 -84.9 427.1 -79.7Q429.90000000000003 -74.5 429.90000000000003 -67.6Q429.90000000000003 -60.5 427.05000000000007 -55.25Q424.20000000000005 -50.0 419.25000000000006 -47.1Q414.30000000000007 -44.2 407.90000000000003 -44.2H389.40000000000003V-22.0ZM389.40000000000003 -60.300000000000004H400.50000000000006Q404.00000000000006 -60.300000000000004 405.75000000000006 -62.10000000000001Q407.50000000000006 -63.900000000000006 407.50000000000006 -67.4Q407.50000000000006 -69.80000000000001 406.75000000000006 -71.35000000000001Q406.00000000000006 -72.9 404.45000000000005 -73.7Q402.90000000000003 -74.5 400.50000000000006 -74.5H389.40000000000003Z" fill="var(--wm-gold,#facc15)"/></svg><div class="tb-sub">Cremer Recipes</div></div></div>
+  <nav class="tabs"><button data-tab="recipes" class="on">Recipes</button><button data-tab="manage" hidden>Manage</button></nav>
+  <button class="iconbtn acct" id="acct" type="button" hidden aria-label="Account and sign out"><span id="acctI">?</span></button>
+  <button class="iconbtn help-btn" id="helpBtn" type="button" aria-label="How to use this app" title="How to use">?</button>
+  <button class="iconbtn" id="theme" aria-label="Switch light / dark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</div></header>
+<div class="wrap">
+  <section id="viewAuth"></section>
+  <section id="viewRecipes" hidden>
+  <div class="hero"><h1>Every setting,<br><span>one search away.</span></h1><p>Cremer counter settings for every FG and bulk item · <span id="badgeT">Line 9 · Line 10</span> <span class="sync" id="syncSt" hidden></span></p><button class="hero-help" id="heroHelp" type="button">New here? How to use →</button></div>
+  <div class="sticky">
+    <label class="search" id="sw">
+      <span class="sicon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+      <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="FG or bulk item, e.g. 2684 or A641" aria-label="Search">
+      <button class="clear" id="clear" type="button" aria-label="Clear"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </label>
+    <div class="filters" id="filters"></div>
+  </div>
+
+  <div class="count" id="count"></div>
+  <div id="results"></div>
+  </section>
+  <section id="viewManage" hidden></section>
+  <aside class="hist" id="hist" hidden aria-label="Update history"><button class="hist-tab" id="histTab" type="button" aria-controls="histBody" aria-expanded="true" title="Hide update history"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span class="lbl">History</span><span class="n" id="histN"></span></button><div class="h-wrap" id="histBody"></div></aside>
+</div>
+<footer>From the Cremer Recipe Guides, Line 9 &amp; Line 10 (10.06.26), plus changes made in Manage. Always confirm settings on the machine.</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-label="Recipe settings" aria-hidden="true"></aside>
+
+<div class="pw-modal guide" id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="guideTitle"><div class="pw-box g-box">
+  <div class="g-head"><h2 id="guideTitle">How to use</h2><button class="iconbtn g-x" id="guideX" type="button" aria-label="Close">✕</button></div>
+  <ol class="g-list"><li><span class="g-ico" aria-hidden="true">🔎</span><div><b class="g-t">1. Find a recipe</b><p>Type the FG or bulk number in the search box, e.g. <b>2684</b> or <b>A641</b>. Or tap a line or bottle size to narrow the list.</p></div></li><li><span class="g-ico" aria-hidden="true">👆</span><div><b class="g-t">2. Open it</b><p>Tap a recipe card. The four big numbers at the top are the main settings; everything else is below.</p></div></li><li><span class="g-ico" aria-hidden="true">🖨️</span><div><b class="g-t">3. Print it</b><p>Tap <b>Print</b> for a one-page sheet. For colour, turn on <b>Background graphics</b> in the print settings. <b>In Teams or SharePoint?</b> Printing is blocked there — <b>download the file and open it</b>, then print.</p></div></li><li><span class="g-ico" aria-hidden="true">💡</span><div><b class="g-t">4. Have better settings?</b><p>Tap <b>Have better settings?</b>, change the numbers, add your name and shift, tap <b>Print</b> and give the sheet to your supervisor. Don’t change the machine until it’s approved.</p></div></li><li><span class="g-ico" aria-hidden="true">🕘</span><div><b class="g-t">5. What changed?</b><p>The <b>History</b> tab on the right edge shows which recipes changed and when. Tap it to open or close.</p></div></li></ol>
+  <div class="g-sup">Supervisors only</div>
+  <ol class="g-list" start="6"><li><span class="g-ico" aria-hidden="true">🔒</span><div><b class="g-t">6. Manage</b><p>Leads, Admins and Owners see <b>Manage</b>: <b>Edit</b>, add (<b>+ New recipe</b>) or <b>Remove</b> recipes. Changes save for everyone straight away and show in the update history with your username.</p></div></li></ol>
+  <div class="g-tip">✅ Always check the settings on the machine before running.</div>
+  <div class="pw-acts"><button class="btn primary grow" id="guideOk" type="button">Got it</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="cremer-sync.js"></script>
+<script>
+// The recipes themselves live in the database (see cremer-sync.js); only the setting names are here.
+const DATA = {"fields": [{"key": "id", "group": "Product", "label": "ID"}, {"key": "length", "group": "Product", "label": "Length (mm)"}, {"key": "width", "group": "Product", "label": "Width (mm ×0.1)"}, {"key": "transparent", "group": "Product", "label": "Transparent"}, {"key": "count", "group": "General", "label": "Count"}, {"key": "precount", "group": "General", "label": "Precount"}, {"key": "maxReject", "group": "General", "label": "Max. reject / min"}, {"key": "channelWidth", "group": "General", "label": "Channel width (mm ×0.1)"}, {"key": "overcount", "group": "General", "label": "Overcount / bottle"}, {"key": "dosingSpeed", "group": "Dosing Slider", "label": "Dosing speed"}, {"key": "dosingStartPos", "group": "Dosing Slider", "label": "Dosing start position"}, {"key": "dosingStartSpeed", "group": "Dosing Slider", "label": "Dosing start speed"}, {"key": "bpm", "group": "Bottle Handling", "label": "Bottles / min (BPM)"}, {"key": "speedBalance", "group": "Bottle Handling", "label": "Speed balance"}, {"key": "beltSpeed", "group": "Bottle Handling", "label": "Belt speed %"}, {"key": "handlingDischarge", "group": "Bottle Handling", "label": "Discharge time (ms ×10)"}, {"key": "rearSpeed", "group": "Vibratory Plates", "label": "Rear plate speed"}, {"key": "rearPulse", "group": "Vibratory Plates", "label": "Rear plate pulse"}, {"key": "rearInterval", "group": "Vibratory Plates", "label": "Rear plate interval"}, {"key": "frontSpeed", "group": "Vibratory Plates", "label": "Front plate speed"}, {"key": "frontAmp", "group": "Vibratory Plates", "label": "Front plate amplitude"}, {"key": "dischargeTime", "group": "Discharge", "label": "Discharge time (ms ×10)"}, {"key": "dischargeIntervals", "group": "Discharge", "label": "Discharge intervals"}, {"key": "dischargeMode", "group": "Discharge", "label": "Discharge mode"}, {"key": "precountFlap", "group": "Discharge", "label": "Precount on discharge flap"}, {"key": "modules", "group": "Machine", "label": "Counting modules"}, {"key": "ejector", "group": "Machine", "label": "Product ejector"}, {"key": "ionizer", "group": "Machine", "label": "Ionizer"}, {"key": "upsideSensor", "group": "Machine", "label": "Upside-down sensor"}, {"key": "diameter", "group": "Bottle Settings", "label": "Bottle diameter (mm)"}, {"key": "screwHeight", "group": "Bottle Settings", "label": "Feed screw height (mm ×0.1)"}, {"key": "screwAngle", "group": "Bottle Settings", "label": "Feed screw angle (°)"}, {"key": "pockets", "group": "Bottle Settings", "label": "Pockets per wheel"}, {"key": "gateOpen", "group": "Bottle Settings", "label": "Gating cylinder open"}, {"key": "gateClose", "group": "Bottle Settings", "label": "Gating cylinder close"}, {"key": "sideSensor", "group": "Bottle Settings", "label": "Side-down sensor correction"}, {"key": "funnel", "group": "Bottle Settings", "label": "Discharge funnel corr. (mm ×0.1)"}]};
+/* intro (same as LineUp): 2.6 s, then a 0.45 s fade; a click or any key skips it (0.2 s fade) */
+(()=>{ const root=document.documentElement, el=document.getElementById('intro'); if(!el) return;
+  const done=()=>{ window.__introDone=true; dispatchEvent(new Event('introdone')); };
+  if(!root.classList.contains('intro-on')){ el.remove(); done(); return; }
+  let t; const end=()=>{ root.classList.remove('intro-on'); el.remove(); removeEventListener('keydown',skip,true); done(); };
+  const go=(cls,ms)=>{ clearTimeout(t); el.classList.add(cls); t=setTimeout(end,ms); };
+  const skip=e=>{ if(e){ e.preventDefault(); e.stopPropagation(); } if(!el.classList.contains('skipping')&&!el.classList.contains('leaving')) go('skipping',200); };
+  t=setTimeout(()=>go('leaving',450),2600); el.addEventListener('click',()=>skip()); addEventListener('keydown',skip,true);
+})();
+const REV = DATA.rev || 'base';
+const FIELDS = DATA.fields.filter(f=>f.key!=='id');
+const GROUPS = [...new Set(FIELDS.map(f=>f.group))];
+const TOGGLES = new Set(['transparent','ejector','ionizer','upsideSensor']);
+const KEYS = [['count','Count'],['precount','Precount'],['bpm','Bottles/min'],['dosingSpeed','Dosing speed']];
+const COLORS = {'9-225':'--c-g','9-300':'--c-y','9-400':'--c-b','9-500':'--c-p','10-150':'--c-g','10-225':'--c-v',
+  '9-75':'--c-75','9-150':'--c-150','9-625':'--c-625','9-750':'--c-750','9-950':'--c-950',
+  '10-75':'--c-75','10-625':'--c-625','10-750':'--c-750','10-950':'--c-950'};
+const PAPER = {'9-225':'Green','9-300':'Yellow','9-400':'Blue','9-500':'Pink','10-150':'Green','10-225':'Purple'};
+const ALL_SIZES = [75,150,225,300,400,500,625,750,950];
+const LINES = [1,5,9,10,12];
+const SIZES = {1:ALL_SIZES, 5:ALL_SIZES, 9:ALL_SIZES, 10:[75,150,225,625,750,950], 12:ALL_SIZES};
+// colour for a size on lines without a paper guide
+const SIZE_COLOR = {75:'--c-75',150:'--c-150',225:'--c-g',300:'--c-y',400:'--c-b',500:'--c-p',625:'--c-625',750:'--c-750',950:'--c-950'};
+const paperOf = r => PAPER[r.line+'-'+r.size] ? PAPER[r.line+'-'+r.size]+' sheet' : '';
+const colVar = (line,size) => COLORS[line+'-'+size] || SIZE_COLOR[size] || '--g1';
+const col = r => `var(${colVar(r.line,r.size)})`;
+const nat = (a,b) => String(a).localeCompare(String(b),undefined,{numeric:true});
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const blank = v => v===undefined||v===null||v==='';
+const text = (k,v) => blank(v)?'—':(TOGGLES.has(k)&&(v===0||v===1)?(v?'ON':'OFF'):String(v));
+const html = (k,v) => blank(v)?'<span class="v blank">—</span>':(TOGGLES.has(k)&&(v===0||v===1)?`<span class="on-off ${v?'on':'off'}">${v?'ON':'OFF'}</span>`:`<span class="v">${esc(v)}</span>`);
+const toVal = s => { s=String(s).trim(); if(s==='') return ''; return isNaN(s)?s:Number(s); };
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),1800); }
+/* Saving on this computer. Where the browser blocks it (e.g. the Teams file preview), keep it in memory for this visit. */
+const CAN_STORE = (()=>{ try{ localStorage.setItem('cremer.t','1'); localStorage.removeItem('cremer.t'); return true; }catch(e){ return false; } })();
+const MEM = {};
+const store = { get(k,d){ try{ const v=localStorage.getItem('cremer.'+k); return v==null?d:JSON.parse(v); }catch(e){ return k in MEM ? JSON.parse(MEM[k]) : d; } },
+                set(k,v){ try{ localStorage.setItem('cremer.'+k,JSON.stringify(v)); }catch(e){ MEM[k]=JSON.stringify(v); } } };
+document.addEventListener('pointerdown', e => {
+  const b = e.target.closest('.btn,.more'); if(!b) return;
+  const r=b.getBoundingClientRect(), d=Math.max(r.width,r.height), s=document.createElement('span');
+  s.className='ripple'; s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;
+  b.appendChild(s); setTimeout(()=>s.remove(),600);
+});
+
+try{ localStorage.removeItem('cremer.name'); }catch(e){}
+/* quick "How to use" guide */
+const guide=$('#guide');
+function openGuide(){ guide.hidden=false; requestAnimationFrame(()=>guide.classList.add('show')); setTimeout(()=>$('#guideOk').focus({preventScroll:true}),60); }
+function closeGuide(){ guide.classList.remove('show'); setTimeout(()=>{ guide.hidden=true; },200); }
+$('#helpBtn').onclick=openGuide; $('#heroHelp').onclick=openGuide; $('#guideX').onclick=closeGuide; $('#guideOk').onclick=closeGuide;
+guide.addEventListener('click',e=>{ if(e.target===guide) closeGuide(); });
+addEventListener('keydown',e=>{ if(e.key==='Escape' && !guide.hidden) closeGuide(); });
+
+/* In-page dialogs: the Teams file preview blocks the browser's own confirm() and print() */
+function askConfirm(msg, ok='OK', danger=false){
+  return new Promise(res=>{
+    const wrap=document.createElement('div'); wrap.className='pw-modal'; wrap.setAttribute('role','alertdialog');
+    wrap.innerHTML=`<div class="pw-box cf-box"><p class="cf-msg">${esc(msg).replace(/\n/g,'<br>')}</p>
+      <div class="pw-acts"><button class="btn" id="cfNo" type="button">Cancel</button><button class="btn primary grow${danger?' cf-danger':''}" id="cfOk" type="button">${esc(ok)}</button></div></div>`;
+    document.body.appendChild(wrap); requestAnimationFrame(()=>wrap.classList.add('show'));
+    const done=v=>{ removeEventListener('keydown',key,true); wrap.classList.remove('show'); setTimeout(()=>wrap.remove(),200); res(v); };
+    const key=e=>{ if(e.key==='Escape'){ e.stopPropagation(); done(false); } if(e.key==='Enter'){ e.preventDefault(); done(true); } };
+    addEventListener('keydown',key,true);
+    wrap.querySelector('#cfNo').onclick=()=>done(false); wrap.querySelector('#cfOk').onclick=()=>done(true);
+    wrap.addEventListener('click',e=>{ if(e.target===wrap) done(false); });
+    setTimeout(()=>wrap.querySelector('#cfOk').focus(),50);
+  });
+}
+/* Forms: the Teams preview blocks form submission, so run the action from the button and the Enter key instead */
+function onSubmitLike(form, btn, fn){
+  form.addEventListener('submit', e=>e.preventDefault());
+  btn.addEventListener('click', e=>{ e.preventDefault(); fn(); });
+  form.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.tagName==='INPUT'){ e.preventDefault(); fn(); } });
+}
+/* Print, and if the page isn't allowed to print (Teams preview), say so and offer other ways */
+function doPrint(){
+  let fired=false; const on=()=>{ fired=true; };
+  addEventListener('beforeprint', on, {once:true});
+  try{ window.print(); }catch(e){}
+  setTimeout(()=>{ removeEventListener('beforeprint', on); if(!fired) printBlocked(); }, 250);
+}
+function printablePage(){
+  const css=[...document.querySelectorAll('style')].map(x=>x.textContent).join('\n');
+  const sugg=document.body.classList.contains('print-sugg') && $('#printSheet');
+  const body= sugg ? $('#printSheet').outerHTML : $('#panel').outerHTML;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Cremer recipe – print</title><style>${css}</style>
+<style>@media screen{ html,body{background:#fff!important;color:#14161d} .panel,.ps{position:static!important;transform:none!important;opacity:1!important;visibility:visible!important;display:block!important;
+ width:auto!important;max-width:960px;max-height:none!important;margin:24px auto!important;box-shadow:none!important;overflow:visible!important} .p-foot,.iconbtn,.p-body{overflow:visible!important} .p-foot,.iconbtn{display:none!important} }</style></head>
+<body class="${sugg?'print-sugg':''}">${body}<script>addEventListener('load',()=>setTimeout(()=>print(),400))<\/script></body></html>`;
+}
+function printBlocked(){
+  const wrap=document.createElement('div'); wrap.className='pw-modal'; wrap.setAttribute('role','dialog');
+  wrap.innerHTML=`<div class="pw-box pb-box">
+    <h2>Printing is blocked here</h2>
+    <p>This page is shown inside another app (for example a Teams tab) that doesn’t allow printing. Open Cremer Recipes in its own browser tab, then printing works:</p>
+    <ol class="pb-steps"><li><b>Open the app’s web address</b> in Chrome or Edge (or use “Open in browser”).</li>
+      <li>Find the recipe and tap <b>Print</b>.</li></ol>
+    <p class="pb-or">Or try these quick ways (some sites block them too):</p>
+    <div class="pw-acts"><button class="btn" id="pbDl" type="button">⬇ Download this sheet</button><button class="btn" id="pbWin" type="button">Open print window</button></div>
+    <div class="pw-acts" style="margin-top:8px"><button class="btn primary grow" id="pbOk" type="button">OK</button></div></div>`;
+  document.body.appendChild(wrap); requestAnimationFrame(()=>wrap.classList.add('show'));
+  const done=()=>{ wrap.classList.remove('show'); setTimeout(()=>wrap.remove(),200); };
+  wrap.querySelector('#pbOk').onclick=done; wrap.addEventListener('click',e=>{ if(e.target===wrap) done(); });
+  wrap.querySelector('#pbWin').onclick=()=>{
+    let w=null; try{ w=window.open(URL.createObjectURL(new Blob([printablePage()],{type:'text/html'})),'_blank'); }catch(e){}
+    if (w) { toast('Print window opened'); done(); } else toast('New windows are blocked here too — use the steps above');
+  };
+  wrap.querySelector('#pbDl').onclick=()=>{ try{ download('cremer-recipe-print.html', printablePage(), 'text/html'); toast('Open the downloaded file — it prints by itself'); }catch(e){ toast('Download blocked — use the steps above'); } };
+}
+
+/* theme */
+const th = store.get('theme',null); if (th) document.documentElement.dataset.theme = th;
+$('#theme').onclick = () => {
+  const cur = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme = cur==='dark'?'light':'dark'; store.set('theme',document.documentElement.dataset.theme);
+};
+
+/* ---- recipes: live from the database (cremer-sync.js), shared by everyone ---- */
+const GUIDE_DATE = '2026-10-06';   // the Cremer Recipe Guides are dated 10.06.26
+const fmtDay = iso => new Date(String(iso).length===10 ? iso+'T12:00:00' : iso).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+const cloud = { recipes:[], history:[], loaded:false, access:null };
+const allHistory = () => cloud.history;
+const guideCount = () => cloud.recipes.filter(r=>r.fromGuide).length;
+const RECORD_KEYS = ['id','fg','bulk','line','size','sheet',...FIELDS.map(f=>f.key)];
+const clean = r => { const o={}; RECORD_KEYS.forEach(k=>{ const v=r[k]; if(!blank(v) && (typeof v==='number'||typeof v==='string')) o[k]=v; }); return o; };
+let R=[], byUid={}, byKey={};
+function buildRecipes(){
+  const list = cloud.recipes.filter(r=>!r.removed).map(r=>({...r, status: !r.fromGuide ? 'new' : (r.edited ? 'edited' : '')}));
+  list.forEach(r=>{ r.uid=r.k; r.hay=[r.id,r.fg,r.bulk,r.sheet].join(' ').toLowerCase(); r.updated = r.status && r.at ? r.at : GUIDE_DATE; });
+  list.sort((a,b)=>nat(a.fg,b.fg)||a.line-b.line||a.size-b.size).forEach((r,i)=>r.order=i);
+  R=list; byUid=Object.fromEntries(R.map(r=>[r.uid,r])); byKey=byUid;
+  $('#badgeT').textContent = `${linesInUse().map(l=>'Line '+l).join(' · ')} · ${R.length} recipes`;
+}
+const linesInUse = () => [...new Set([9,10,...R.map(r=>+r.line)])].sort((a,b)=>a-b);
+const sourceOf = r => r.status==='new' ? 'Added in Manage' : `Cremer Recipe Guide Line ${esc(r.line)} (10.06.26) · sheet “${esc(r.sheet)}”`+(r.status==='edited'?' · edited in Manage':'');
+function refreshAll(){ buildRecipes(); renderFilters(); render(); renderHistory(); if(state.tab==='manage') renderManage(); }
+
+/* ---- sign-in: Packaging Lead Hub accounts. MLT and up look up recipes; Lead and up change them ---- */
+const canEdit = () => !!(cloud.access && cloud.access.canEdit);
+const ROLE_NAME = {plt:'PLT', mlt:'MLT', lead:'Lead', admin:'Admin', owner:'Owner'};
+function gate(html){
+  const g=$('#viewAuth'); g.innerHTML = `<div class="lock-wrap"><div class="lock-card">${html}</div></div>`; g.hidden=false;
+  $('#viewRecipes').hidden=true; $('#viewManage').hidden=true; $('#hist').hidden=true; $('.tabs').hidden=true;
+  document.documentElement.classList.add('gated');
+}
+function openApp(){
+  $('#viewAuth').hidden=true; $('#viewAuth').innerHTML=''; document.documentElement.classList.remove('gated'); $('#hist').hidden=false; $('.tabs').hidden=false;
+  $('.tabs [data-tab="manage"]').hidden = !canEdit();
+  if (state.tab==='manage' && !canEdit()) state.tab='recipes';
+  setTab(state.tab);
+  peekHist();
+}
+function gateSignIn(){
+  gate(`<div class="lock-ico">🔐</div>
+    <h2>Sign in</h2>
+    <p>Use your <b>Packaging Lead Hub</b> username and password.</p>
+    <form id="signForm" class="lock-form col" autocomplete="on">
+      <input class="inp" id="suUser" placeholder="Username" aria-label="Username" autocomplete="username" autocapitalize="none" spellcheck="false">
+      <input class="inp" id="suPw" type="password" placeholder="Password" aria-label="Password" autocomplete="current-password">
+      <button class="btn primary grow" id="suBtn" type="submit">Sign in</button>
+    </form>
+    <div class="lock-err" id="suErr" hidden></div>
+    <div class="lock-note">No account yet? Create one in Packaging Lead Hub, then ask an Admin to make it an MLT, Lead or Admin. New accounts (PLT) can’t see the recipes.</div>`);
+  const btn=$('#suBtn');
+  onSubmitLike($('#signForm'), btn, async () => {
+    if (btn.disabled) return; const er=$('#suErr'); er.hidden=true;
+    const u=$('#suUser').value.trim(), pw=$('#suPw').value;
+    if (!u || !pw){ er.hidden=false; er.textContent='Enter your username and password.'; return; }
+    btn.disabled=true; btn.textContent='Signing in…';
+    try{ await CloudSync.signIn(u, pw); }
+    catch(e){ er.hidden=false; er.textContent=e.message; btn.disabled=false; btn.textContent='Sign in'; $('#suPw').select(); }
+  });
+  setTimeout(()=>$('#suUser').focus({preventScroll:true}),60);
+}
+function gateNoAccess(a){
+  gate(`<div class="lock-ico">🚫</div>
+    <h2>No access yet</h2>
+    <p>You’re signed in as <b>${esc(a.username)}</b>${a.role&&a.role!=='none'?` (${esc(ROLE_NAME[a.role]||a.role)})`:''}. Cremer Recipes opens for <b>MLT, Lead, Admin and Owner</b> accounts.</p>
+    <p>Ask an Admin to change your account type in Packaging Lead Hub, then reload this page.</p>
+    <div class="pw-acts"><button class="btn" id="gOut" type="button">Sign out</button><button class="btn primary grow" id="gReload" type="button">Reload</button></div>`);
+  $('#gOut').onclick=()=>CloudSync.signOut(); $('#gReload').onclick=()=>location.reload();
+}
+function gateMessage(ico, title, msg, retry){
+  gate(`<div class="lock-ico">${ico}</div><h2>${esc(title)}</h2><p>${esc(msg)}</p>${retry?`<div class="pw-acts"><button class="btn primary grow" id="gReload" type="button">Try again</button></div>`:''}`);
+  if (retry) $('#gReload').onclick=()=>location.reload();
+}
+function setSync(s){
+  const el=$('#syncSt'); if(!el) return;
+  el.className='sync '+s.state; el.textContent=s.text; el.hidden=false;
+}
+$('#acct').onclick = async () => {
+  const a=cloud.access; if(!a) return;
+  const pending = CloudSync.hasPendingWrites();
+  const msg = `Signed in as ${a.username}${ROLE_NAME[a.role]?' ('+ROLE_NAME[a.role]+')':''}.\nSign out of Cremer Recipes on this computer?` + (pending?'\n\n⚠️ Some changes haven’t reached the database yet. Signing out now loses them.':'');
+  if (await askConfirm(msg, 'Sign out', pending)) CloudSync.signOut();
+};
+
+/* filters */
+const state = { q:'', line:'all', size:'all', limit:48, tab:'recipes', mq:'' };
+function renderFilters(){
+  const lines = [['all','All lines'], ...linesInUse().map(l=>[String(l),'Line '+l])];
+  const groups = [...new Set(R.filter(r=>state.line==='all'||r.line==state.line).map(r=>r.line+'-'+r.size))]
+    .sort((a,b)=>{const [la,sa]=a.split('-').map(Number),[lb,sb]=b.split('-').map(Number);return la-lb||sa-sb;});
+  $('#filters').innerHTML =
+    lines.map(([v,l])=>`<button class="chip line ${state.line===v?'on':''}" data-line="${v}">${l}</button>`).join('') +
+    '<span class="sep"></span>' +
+    groups.map(g=>{const [l,s]=g.split('-');return `<button class="chip size ${state.size===g?'on':''}" data-size="${g}" style="--c:var(${colVar(l,s)})"><span class="dot"></span>${s}cc${state.line==='all'?` <small>L${l}</small>`:''}</button>`;}).join('');
+}
+$('#filters').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  if (b.dataset.line){ state.line=b.dataset.line; state.size='all'; }
+  if (b.dataset.size){ state.size = state.size===b.dataset.size?'all':b.dataset.size; }
+  state.limit=48; renderFilters(); render();
+});
+let qt;
+$('#q').addEventListener('input', e => { $('#sw').classList.toggle('has',!!e.target.value); clearTimeout(qt); qt=setTimeout(()=>{state.q=e.target.value;state.limit=48;render();},80); });
+$('#clear').onclick = e => { e.preventDefault(); $('#q').value=''; $('#sw').classList.remove('has'); state.q=''; render(); $('#q').focus(); };
+
+/* results */
+function hl(s,toks){ s=esc(s); if(!toks.length) return s; return s.replace(new RegExp('('+toks.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','gi'),'<mark>$1</mark>'); }
+function render(){
+  const toks = state.q.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const list = R.filter(r=>(state.line==='all'||r.line==state.line)&&(state.size==='all'||state.size===r.line+'-'+r.size)&&toks.every(t=>r.hay.includes(t)));
+  if (toks.length) list.sort((a,b)=>{const ex=r=>toks.includes(String(r.fg).toLowerCase())||toks.includes(String(r.bulk).toLowerCase());return ex(b)-ex(a)||a.order-b.order;});
+  else list.sort((a,b)=>a.order-b.order);
+  $('#count').innerHTML = list.length===R.length ? `<b>${R.length}</b> recipes` : `<b>${list.length}</b> of ${R.length} recipes`;
+  if (!cloud.loaded){ $('#count').innerHTML=''; $('#results').innerHTML=`<div class="grid"><div class="empty"><span class="e">⏳</span><b>Loading recipes…</b></div></div>`; return; }
+  if (!R.length){ $('#count').innerHTML=''; $('#results').innerHTML=`<div class="grid"><div class="empty"><span class="e">📭</span><b>No recipes in the database yet.</b><br>${canEdit()?'Import them in <b>Manage</b> → <b>Import recipe file</b>.':'A Lead or Admin can import them in Manage.'}</div></div>`; return; }
+  if (!list.length){ $('#results').innerHTML=`<div class="grid"><div class="empty"><span class="e">🔎</span><b>No recipe found.</b><br>Try only the FG number or the bulk code, or choose “All lines”.</div></div>`; return; }
+  const shown = list.slice(0,state.limit);
+  $('#results').innerHTML = `<div class="grid">${shown.map((r,i)=>`
+    <button class="card" data-u="${esc(r.uid)}" style="--c:${col(r)};animation-delay:${Math.min(i,20)*22}ms">
+      <div class="fg">${hl(r.fg,toks)}</div>
+      <div class="bulk">${hl(r.bulk||'—',toks)}</div>
+      <span class="tag">Line ${r.line} · ${r.size} cc</span>
+      <div class="mini"><span>Count <b class="num">${esc(text('count',r.count))}</b></span><span>BPM <b class="num">${esc(text('bpm',r.bpm))}</b></span></div>
+      <div class="upd${r.updated!==GUIDE_DATE?' recent':''}">Updated ${esc(fmtDay(r.updated))}</div>
+    </button>`).join('')}</div>` + (list.length>shown.length?`<button class="more" id="more">Show ${list.length-shown.length} more</button>`:'');
+  const m=$('#more'); if(m) m.onclick=()=>{state.limit=1e9;render();};
+}
+$('#results').addEventListener('click', e => { const c=e.target.closest('.card'); if(c) open(c.dataset.u); });
+
+/* recipe window */
+const CLOSE_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+function headHtml(r){
+  return `<div class="p-head">
+      <button class="iconbtn" id="pClose" aria-label="Close">${CLOSE_SVG}</button>
+      <div class="p-kicker print-only">LineUp · Cremer Recipes · Counter settings</div>
+      <div class="p-name"><div class="p-fg">${esc(r.fg)}</div><div class="p-bulk">${esc(r.bulk)}</div></div>
+      <div class="p-size print-only"><span class="pill"${r.line+'-'+r.size==='9-300'?' style="color:#14161d"':''}>Line ${r.line} · ${r.size} cc</span><span class="paper">${paperOf(r)}</span></div>
+      <span class="p-tag">Line ${r.line} · ${r.size} cc${paperOf(r)?' · '+paperOf(r):''}</span></div>`;
+}
+function showPanel(r,h){
+  const p=$('#panel'); p.classList.remove('view'); p.style.setProperty('--c',col(r)); p.innerHTML=h; p.dataset.dirty=''; p.classList.add('show'); p.setAttribute('aria-hidden','false'); $('#scrim').classList.add('show');
+  p.querySelector('.p-body').scrollTop=0; $('#pClose').onclick=()=>close(); return p;
+}
+function open(uid){
+  const r = byUid[uid]; if(!r) return;
+  const others = R.filter(x=>x.uid!==uid&&x.fg===r.fg);
+  let h = headHtml(r) + `<div class="p-body">` +
+    `<div class="keys">${KEYS.map(([k,l])=>`<div class="key"><b class="num">${esc(text(k,r[k]))}</b><span>${l}</span></div>`).join('')}</div>`;
+  GROUPS.forEach((g,gi)=>{
+    h += `<div class="sec" style="animation-delay:${gi*35}ms"><h3>${esc(g)}</h3><div class="box">${FIELDS.filter(f=>f.group===g).map(f=>`<div class="kv"><span class="k">${esc(f.label)}</span>${html(f.key,r[f.key])}</div>`).join('')}</div></div>`;
+  });
+  if (others.length) h += `<div class="sec also-sec"><h3>Same FG, other recipe</h3><div class="also">${others.map(x=>`<button class="chip size" data-go="${esc(x.uid)}" style="--c:${col(x)}"><span class="dot"></span>Line ${x.line} · ${x.size}cc${x.bulk!==r.bulk?' · '+esc(x.bulk):''}</button>`).join('')}</div></div>`;
+  h += `<div class="note">Last updated <b>${esc(fmtDay(r.updated))}</b> · workbook sheet “${esc(r.sheet)}”${r.status?` · ${r.status==='new'?'added':'edited'} in Manage${r.by?' by '+esc(r.by):''}`:''}</div>
+    <div class="p-print-foot print-only"><span>Source: <b>${sourceOf(r)}</b></span><span>Updated ${esc(fmtDay(r.updated))} · Printed ${new Date().toLocaleDateString()} · Confirm settings on the machine</span></div></div>
+    <div class="p-foot"><button class="btn" id="pCopy">Copy</button><button class="btn primary grow" id="pBetter">💡 Have better settings?</button><button class="btn" id="pPrint">Print</button></div>`;
+  const p = showPanel(r,h); p.classList.add('view');
+  $('#pPrint').onclick=()=>{ document.body.classList.remove('print-sugg'); doPrint(); }; $('#pCopy').onclick=()=>copy(r);
+  $('#pBetter').onclick=()=>suggest(uid);
+  p.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>open(b.dataset.go));
+}
+function settingControl(f, v, orig){
+  const cur=blank(v)?'':String(v), o=blank(orig)?'':String(orig);
+  const ctl = TOGGLES.has(f.key)&&(blank(v)||v===0||v===1)&&(blank(orig)||orig===0||orig===1)
+    ? `<select class="vin" data-k="${f.key}" data-o="${esc(o)}"><option value=""${cur===''?' selected':''}>—</option><option value="1"${cur==='1'?' selected':''}>ON</option><option value="0"${cur==='0'?' selected':''}>OFF</option></select>`
+    : `<input class="vin" data-k="${f.key}" data-o="${esc(o)}" value="${esc(cur)}" inputmode="decimal" placeholder="—" aria-label="${esc(f.label)}">`;
+  return `<div class="kv${cur!==o?' chg':''}"><span class="k">${esc(f.label)}</span><span class="ed"><span class="old">${esc(text(f.key,orig))}</span><span class="arrow">→</span>${ctl}</span></div>`;
+}
+const markChanged = p => p.querySelectorAll('.vin').forEach(i=>i.closest('.kv').classList.toggle('chg', i.value.trim()!==i.dataset.o));
+
+/* "Have better settings?" — change the values you'd use, then print the sheet */
+function suggest(uid){
+  const r = byUid[uid];
+  let h = headHtml(r) + `<div class="p-body">
+    <div class="hint"><b>Have better settings?</b> Change the values you think should be different, then print the sheet and give it to your supervisor.</div>
+    <label class="field"><span>Your name and shift (Optional)</span><input class="inp" id="sName" maxlength="60" autocomplete="off" placeholder="e.g. Maria, 2nd shift"></label>`;
+  GROUPS.forEach(g=>{ h += `<div class="sec"><h3>${esc(g)}</h3><div class="box">${FIELDS.filter(f=>f.group===g).map(f=>settingControl(f,r[f.key],r[f.key])).join('')}</div></div>`; });
+  h += `<label class="field"><span>Why is it better? (optional)</span><textarea class="inp" id="sNote" rows="3" maxlength="500" placeholder="e.g. fewer rejects, bottles stopped jamming at the gate"></textarea></label></div>
+    <div class="p-foot"><button class="btn" id="sCancel">Cancel</button><button class="btn primary grow" id="sPrint" disabled>Change a value first</button></div>`;
+  const p = showPanel(r,h);
+  const changes = () => [...p.querySelectorAll('.vin')].filter(i=>i.value.trim()!==i.dataset.o).map(i=>{
+    const f=FIELDS.find(x=>x.key===i.dataset.k);
+    return {key:f.key,label:f.label,group:f.group,from:text(f.key,r[f.key]),to:text(f.key,toVal(i.value))};
+  });
+  const refresh = () => {
+    markChanged(p);
+    const n=changes().length;
+    p.dataset.dirty = n?'1':'';
+    $('#sPrint').disabled = !n;
+    $('#sPrint').textContent = n ? `🖨 Print ${n} change${n>1?'s':''}` : 'Change a value first';
+  };
+  const pb=p.querySelector('.p-body'); pb.addEventListener('input', refresh); pb.addEventListener('change', refresh); refresh();
+  $('#sCancel').onclick=()=>{ if(!p.dataset.dirty) open(uid); else askConfirm('Discard your changes?','Discard',true).then(ok=>{ if(ok) open(uid); }); };
+  $('#sPrint').onclick=()=>{
+    const ch=changes(); if(!ch.length) return;
+    const name=$('#sName').value.trim();
+    printSuggestion(r, ch, name, $('#sNote').value.trim());
+  };
+  setTimeout(()=>{ $('#sName').focus({preventScroll:true}); },60);
+}
+function printSuggestion(r, ch, name, note){
+  const old=$('#printSheet'); if (old) old.remove();
+  const nv = Object.fromEntries(ch.map(c=>[c.key,c.to]));
+  const sz = r.line+'-'+r.size;
+  const el=document.createElement('div'); el.id='printSheet'; el.className='ps'+(ch.length>4?' many':'')+(ch.length>9?' lots':''); el.style.setProperty('--c', col(r));
+  el.innerHTML = `
+    <div class="ps-head">
+      <div><div class="ps-kicker">LineUp · Cremer Recipes · Suggested settings change</div>
+        <div class="ps-name"><span class="ps-fg">${esc(r.fg)}</span><span class="ps-bulk">${esc(r.bulk)}</span></div></div>
+      <div class="ps-size"><span class="ps-pill"${sz==='9-300'?' style="color:#14161d"':''}>Line ${r.line} · ${r.size} cc</span><span class="ps-paper">${paperOf(r)}</span></div>
+    </div>
+    <div class="ps-meta">
+      <div><span>Suggested by</span><b>${name?esc(name):'&nbsp;'}</b></div>
+      <div><span>Date</span><b>${esc(new Date().toLocaleDateString())}</b></div>
+      <div><span>Approved by / date</span><b>&nbsp;</b></div>
+    </div>
+    <div class="ps-h">Suggested changes · ${ch.length}</div>
+    <table class="ps-tab"><thead><tr><th>Setting</th><th>Section</th><th class="r">Now</th><th class="r">Suggested</th></tr></thead>
+      <tbody>${ch.map(c=>`<tr><td>${esc(c.label)}</td><td class="g">${esc(c.group)}</td><td class="r cur">${esc(c.from)}</td><td class="r new"><span>${esc(c.to)}</span></td></tr>`).join('')}</tbody></table>
+    <div class="ps-h">Why it’s better</div>
+    <div class="ps-note">${note?esc(note):''}</div>
+    <div class="ps-h">Full recipe with the change</div>
+    <div class="ps-cols">${GROUPS.map(g=>`<div class="ps-sec"><h4>${esc(g)}</h4>${FIELDS.filter(f=>f.group===g).map(f=>{
+        const c = f.key in nv;
+        return `<div class="ps-kv${c?' chg':''}"><span>${esc(f.label)}</span><b>${c?`<s>${esc(text(f.key,r[f.key]))}</s>${esc(nv[f.key])}`:esc(text(f.key,r[f.key]))}</b></div>`;
+      }).join('')}</div>`).join('')}</div>
+    <div class="ps-foot"><span>Source: ${sourceOf(r)}</span><span>A suggestion only — don’t run these settings until a supervisor approves them.</span></div>`;
+  document.body.appendChild(el); document.body.classList.add('print-sugg');
+  const done=()=>{ document.body.classList.remove('print-sugg'); removeEventListener('afterprint',done); };
+  addEventListener('afterprint',done);
+  doPrint();
+}
+function close(force){
+  const p=$('#panel');
+  if (!force && p.dataset.dirty){ askConfirm('Discard your changes?','Discard',true).then(ok=>{ if(ok) close(true); }); return false; }
+  p.dataset.dirty=''; p.classList.remove('show'); p.setAttribute('aria-hidden','true'); $('#scrim').classList.remove('show'); return true;
+}
+$('#scrim').onclick=()=>close();
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape' && $('#panel').classList.contains('show')) close();
+  if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ e.preventDefault(); setTab('recipes'); $('#q').focus(); }
+});
+function copyText(t,msg){
+  const ok=()=>toast(msg||'✓ Copied'), fb=()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok();}catch(e){toast('Copy not available');}a.remove();};
+  if(navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(t).then(ok,fb); else fb();
+}
+function copy(r){
+  let t=`${r.fg} ${r.bulk} — Line ${r.line}, ${r.size}cc\n`;
+  GROUPS.forEach(g=>{ t+=`\n${g}\n`; FIELDS.filter(f=>f.group===g).forEach(f=>t+=`  ${f.label}: ${text(f.key,r[f.key])}\n`); });
+  copyText(t);
+}
+
+/* tabs */
+const fmtDate = iso => { const d=new Date(iso); return d.toLocaleDateString()+' '+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); };
+function setTab(t){
+  state.tab=t;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  $('#viewRecipes').hidden = t!=='recipes'; $('#viewManage').hidden = t!=='manage';
+  if (t==='manage') renderManage();
+  scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+
+function download(name, content, type){
+  const blob=new Blob([content],{type});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+}
+/* Manage tab (Lead and up): edit, add, remove and import recipes. Changes go straight to the database. */
+function renderManage(){
+  const v=$('#viewManage');
+  if (!canEdit()){ v.innerHTML=`<div class="grid"><div class="empty"><span class="e">🔒</span><b>Only Leads, Admins and Owners can change recipes.</b></div></div>`; return; }
+  const toks = state.mq.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const list = R.filter(r=>toks.every(t=>r.hay.includes(t))).sort((a,b)=>a.order-b.order);
+  const removed = cloud.recipes.filter(r=>r.removed).sort((a,b)=>nat(a.fg,b.fg));
+  const empty = cloud.loaded && !cloud.recipes.length;
+  let h = `<div class="s-tools">
+      <button class="chip line on" id="mNew">+ New recipe</button>
+      <button class="chip" id="mImport">⬆ Import recipe file</button>
+      <input type="file" id="mFile" accept=".html,.htm,.json,text/html,application/json" hidden>
+    </div>
+    <div class="s-info">Changes save to the database straight away and everyone sees them live. Each one goes in the update history with your username (<b>${esc(cloud.access.username)}</b>).</div>
+    ${empty?`<div class="m-warn">📥 <b>The database has no recipes yet.</b> Tap <b>Import recipe file</b> and choose <b>cremer-recipes.html</b> (the file from Teams). If someone has changes saved in that file’s Manage tab on their own computer, have them tap <b>Download updated file</b> there first and import that file instead.</div>`:''}
+    <label class="search m-search" id="msw"><span class="sicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+      <input id="mq" type="search" autocomplete="off" spellcheck="false" placeholder="Find a recipe to edit or remove" value="${esc(state.mq)}" aria-label="Find a recipe"></label>
+    <div class="count">${list.length} of ${R.length} recipes</div>
+    <div class="m-list">${list.slice(0,state.mLimit||60).map(r=>`
+      <div class="m-row" style="--c:${col(r)}">
+        <span class="dot"></span>
+        <div class="m-main"><b>${esc(r.fg)}</b> <span>${esc(r.bulk)}</span><div class="m-sub">Line ${esc(r.line)} · ${esc(r.size)} cc · updated ${esc(fmtDay(r.updated))}${r.status?` · <em class="m-st ${r.status}">${r.status==='new'?'New':'Edited'}</em>`:''}</div></div>
+        <button class="btn" data-medit="${esc(r.k)}">Edit</button>
+        <button class="btn danger" data-mdel="${esc(r.k)}">Remove</button>
+      </div>`).join('')||'<div class="empty">No recipe matches.</div>'}</div>
+    ${list.length>(state.mLimit||60)?`<button class="more" id="mMore">Show ${list.length-(state.mLimit||60)} more</button>`:''}
+    ${removed.length?`<details class="m-removed"><summary>Removed recipes (${removed.length})</summary>${removed.map(r0=>`
+      <div class="m-row" style="--c:${col(r0)}"><span class="dot"></span><div class="m-main"><b>${esc(r0.fg)}</b> <span>${esc(r0.bulk||'')}</span><div class="m-sub">Line ${esc(r0.line)} · ${esc(r0.size)} cc${r0.by?` · removed by ${esc(r0.by)}`:''}</div></div>
+      <button class="btn" data-mrestore="${esc(r0.k)}">Restore</button></div>`).join('')}</details>`:''}`;
+  v.innerHTML = h;
+  const mq=$('#mq');
+  mq.oninput = () => { state.mq=mq.value; const pos=mq.selectionStart; renderManage(); const n2=$('#mq'); n2.focus(); try{n2.setSelectionRange(pos,pos);}catch(e){} };
+  $('#mFile').onchange = e => { const f=e.target.files[0]; e.target.value=''; if (f) importFile(f); };
+}
+const entryOf = (r, action, fields) => ({action, fg:r.fg, bulk:r.bulk||'', line:r.line, size:r.size, fields:fields||[]});
+$('#viewManage').addEventListener('click', e => {
+  const b=e.target.closest('button'); if(!b || b.disabled) return;
+  if (b.id==='mNew') editRecipe(null);
+  else if (b.id==='mImport') $('#mFile').click();
+  else if (b.dataset.medit) editRecipe(b.dataset.medit);
+  else if (b.dataset.mdel) removeRecipe(b.dataset.mdel);
+  else if (b.dataset.mrestore){ const k=b.dataset.mrestore, r0=cloud.recipes.find(x=>x.k===k); if(!r0) return;
+    CloudSync.setRemoved(k, false, entryOf(r0,'restored')); toast('Restored'); }
+  else if (b.id==='mMore'){ state.mLimit=1e9; renderManage(); }
+});
+function uniqueSheet(name, line, k){
+  let s=name, i=2; const taken=new Set(cloud.recipes.filter(r=>r.line==line&&r.k!==k).map(r=>r.sheet));
+  while(taken.has(s)) s=`${name} (${i++})`;
+  return s;
+}
+function editRecipe(k, prefill){
+  if (!canEdit()){ setTab('recipes'); return; }
+  const cur = k ? byKey[k] : null;
+  if (k && !cur){ toast('That recipe was removed'); return; }
+  const isNew = !cur;
+  const r = cur ? {...cur} : {fg:'', bulk:'', line:9, size:225};
+  const val = key => prefill && key in prefill ? prefill[key] : r[key];
+  const sizeOpts = l => (SIZES[l]||ALL_SIZES).map(s=>`<option value="${s}"${s==r.size?' selected':''}>${s} cc</option>`).join('');
+  let h = `<div class="p-head m-edit">
+      <button class="iconbtn" id="pClose" aria-label="Close">${CLOSE_SVG}</button>
+      <div class="p-fg">${isNew?'New recipe':'Edit recipe'}</div>
+      <div class="p-bulk">${isNew?'Fill in the item and its settings':esc(r.fg+' '+(r.bulk||''))+' · Line '+esc(r.line)+' · '+esc(r.size)+' cc'}</div></div>
+    <div class="p-body">
+    <div class="m-grid">
+      <label class="field"><span>FG item</span><input class="inp" id="eFg" value="${esc(r.fg)}" placeholder="e.g. 2684" autocomplete="off"></label>
+      <label class="field"><span>Bulk item</span><input class="inp" id="eBulk" value="${esc(r.bulk||'')}" placeholder="e.g. A664" autocomplete="off"></label>
+      <label class="field"><span>Line</span><select class="inp" id="eLine">${LINES.map(l=>`<option value="${l}"${r.line==l?' selected':''}>Line ${l}</option>`).join('')}</select></label>
+      <label class="field"><span>Bottle size</span><select class="inp" id="eSize">${sizeOpts(r.line)}</select></label>
+    </div>
+    <div class="lock-err" id="eErr" hidden></div>`;
+  GROUPS.forEach(g=>{ h += `<div class="sec"><h3>${esc(g)}</h3><div class="box">${FIELDS.filter(f=>f.group===g).map(f=>settingControl(f, val(f.key), isNew?val(f.key):r[f.key])).join('')}</div></div>`; });
+  h += `</div><div class="p-foot">${isNew?'':'<button class="btn danger" id="eDel">Remove</button>'}<button class="btn" id="eCancel">Cancel</button><button class="btn primary grow" id="eSave">${isNew?'Add recipe':'Save changes'}</button></div>`;
+  const p = showPanel(r,h);
+  if (prefill) p.dataset.dirty='1';
+  $('#eLine').onchange = () => { const l=+$('#eLine').value; $('#eSize').innerHTML = SIZES[l].map(s=>`<option value="${s}">${s} cc</option>`).join(''); p.style.setProperty('--c',col({line:l,size:+$('#eSize').value})); };
+  $('#eSize').onchange = () => p.style.setProperty('--c',col({line:+$('#eLine').value,size:+$('#eSize').value}));
+  const pb=p.querySelector('.p-body');
+  pb.addEventListener('input', ()=>{ p.dataset.dirty='1'; if(!isNew) markChanged(p); });
+  pb.addEventListener('change', ()=>{ p.dataset.dirty='1'; if(!isNew) markChanged(p); });
+  $('#eCancel').onclick=()=>close();
+  if (!isNew) $('#eDel').onclick=async()=>{ if(await removeRecipe(k)) close(true); };
+  $('#eSave').onclick=async()=>{
+    const er=$('#eErr'); er.hidden=true;
+    const fg=$('#eFg').value.trim().toUpperCase(), bulk=$('#eBulk').value.trim().toUpperCase(), line=+$('#eLine').value, size=+$('#eSize').value;
+    if (!fg){ er.hidden=false; er.textContent='Enter the FG item.'; $('#eFg').focus(); return; }
+    const dup = R.find(x=>x.k!==k && String(x.fg).toUpperCase()===fg && String(x.bulk||'').toUpperCase()===bulk && +x.line===line && +x.size===size);
+    if (dup && !(await askConfirm(`There is already a recipe for ${fg} ${bulk} on Line ${line}, ${size} cc. Save this one too?`,'Save anyway'))) return;
+    const rec = {fg, bulk, line, size, id:(fg+' '+bulk).trim()};
+    p.querySelectorAll('.vin').forEach(i=>{ const v=toVal(i.value); if(!blank(v)) rec[i.dataset.k]=v; });
+    const was = v => blank(v) ? '' : String(v);
+    const fields = isNew ? [] : [
+      ...(String(cur.fg).toUpperCase()!==fg ? ['FG item'] : []), ...(String(cur.bulk||'').toUpperCase()!==bulk ? ['Bulk item'] : []),
+      ...(+cur.line!==line ? ['Line'] : []), ...(+cur.size!==size ? ['Bottle size'] : []),
+      ...FIELDS.filter(f=>was(cur[f.key])!==was(rec[f.key])).map(f=>f.label)];
+    if (!isNew && !fields.length){ close(true); toast('Nothing changed'); return; }
+    if (isNew) rec.sheet = uniqueSheet(rec.id, line, null);
+    else if (!cur.fromGuide) rec.sheet = uniqueSheet(cur.sheet===cur.id||!cur.sheet?rec.id:cur.sheet, line, k);
+    else { rec.sheet = cur.sheet; if (cur.id && (fg+' '+bulk)===(cur.fg+' '+(cur.bulk||''))) rec.id = cur.id; }
+    const data = {...clean(rec), fromGuide: !isNew && !!cur.fromGuide, edited: !isNew && !!cur.fromGuide, removed:false};
+    CloudSync.saveRecipe(isNew ? null : k, data, entryOf(rec, isNew?'added':'edited', fields));
+    close(true); toast(isNew?'✓ Recipe added':'✓ Changes saved');
+  };
+  setTimeout(()=>{ (isNew?$('#eFg'):p.querySelector('.kv.chg .vin')||$('#eFg')).focus({preventScroll:true}); },60);
+}
+async function removeRecipe(k){
+  const r=byKey[k]; if(!r) return false;
+  if (!(await askConfirm(`Remove ${r.fg} ${r.bulk||''} (Line ${r.line}, ${r.size} cc) for everyone?\nYou can restore it later under "Removed recipes".`,'Remove',true))) return false;
+  CloudSync.setRemoved(k, true, entryOf(r,'removed'));
+  toast('Recipe removed'); return true;
+}
+/* Import: the recipes built into a cremer-recipes.html file (or its DATA as JSON). Only adds missing ones. */
+function recipesFromFile(text){
+  let d=null; const m=text.match(/const DATA = (\{[\s\S]*?\});\n/);
+  try{ d=JSON.parse(m ? m[1] : text); }catch(e){ return null; }
+  const list = Array.isArray(d) ? d : d && d.recipes;
+  if (!Array.isArray(list)) return null;
+  return list.filter(r=>r && !blank(r.fg) && +r.line && +r.size && !blank(r.sheet))
+    .map(r=>clean({...r, fg:String(r.fg), bulk:blank(r.bulk)?'':String(r.bulk), sheet:String(r.sheet), id:blank(r.id)?'':String(r.id), line:+r.line, size:+r.size}));
+}
+async function importFile(f){
+  let recs=null; try{ recs=recipesFromFile(await f.text()); }catch(e){}
+  if (!recs || !recs.length){ toast('No recipes found in that file'); return; }
+  const have = new Set(cloud.recipes.map(r=>r.k));
+  const fresh = recs.filter(r=>!have.has(CloudSync.docId(r.line+'|'+r.sheet))).length;
+  if (!fresh){ toast(`All ${recs.length} recipes in that file are already in the database`); return; }
+  if (!(await askConfirm(`Add ${fresh} recipe${fresh>1?'s':''} from ${f.name} to the database for everyone?`+(recs.length>fresh?`\n${recs.length-fresh} already there will be left as they are.`:''),'Import'))) return;
+  const b=$('#mImport'); if(b){ b.disabled=true; b.textContent='Importing…'; }
+  try{ const res=await CloudSync.importRecipes(recs, [...have]); toast(`✓ ${res.added} recipes imported`); }
+  catch(e){ console.error(e); toast(e.code==='permission-denied'?'The database refused the import':'Import failed — check the connection'); }
+  renderManage();
+}
+
+
+/* update history panel (sticky on wide screens; a drawer from the History button on smaller ones) */
+const ACT = {added:'Added', edited:'Edited', removed:'Removed', restored:'Restored', imported:'Imported'};
+let histAll = false;
+function renderHistory(){
+  const all = allHistory(), shown = histAll ? all : all.slice(0, 40), gc = guideCount();
+  const days = []; shown.forEach(h=>{ const d=fmtDay(h.at); if(!days.length || days[days.length-1].d!==d) days.push({d, items:[]}); days[days.length-1].items.push(h); });
+  $('#histN').textContent = all.length || '';
+  $('#histBody').innerHTML = `<div class="h-head"><div><b>Update history</b><small>${all.length ? all.length+(all.length>=500?'+':'')+' change'+(all.length>1?'s':'') : 'No changes yet'}</small></div>
+      <button class="iconbtn h-close" id="histClose" aria-label="Hide history" title="Hide history"><span class="x">${CLOSE_SVG}</span><svg class="hide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m13 6 6 6-6 6"/><path d="M5 6v12"/></svg></button></div>
+    <div class="h-list">
+      ${days.map(g=>`<div class="h-day">${esc(g.d)}</div>${g.items.map(h=>h.action==='imported'?`
+        <div class="h-item base"><span class="dot"></span><span class="h-main"><span class="h-t"><b>Recipe file</b></span><small>${esc((h.fields||[]).join(', '))} · by ${esc(h.by||'?')}</small></span><span class="h-act base">Imported</span></div>`:`
+        <button class="h-item" data-hk="${esc(h.k)}" style="--c:${col(h)}" type="button">
+          <span class="dot"></span>
+          <span class="h-main"><span class="h-t"><b>${esc(h.fg)}</b> ${esc(h.bulk||'')}</span>
+            <small>Line ${esc(h.line)} · ${esc(h.size)} cc · by ${esc(h.by||'?')}</small>
+            ${h.fields&&h.fields.length?`<small class="h-f">${esc(h.fields.join(', '))}</small>`:''}</span>
+          <span class="h-act ${esc(h.action)}">${ACT[h.action]||esc(h.action)}</span>
+        </button>`).join('')}`).join('')}
+      ${all.length>shown.length?`<button class="more h-more" id="histMore" type="button">Show all ${all.length}</button>`:''}
+      ${gc?`<div class="h-day">${esc(fmtDay(GUIDE_DATE))}</div>
+      <div class="h-item base"><span class="dot"></span><span class="h-main"><span class="h-t"><b>Cremer Recipe Guides</b></span><small>Line 9 &amp; Line 10 · ${gc} recipes</small></span><span class="h-act base">Guide</span></div>`:''}
+    </div>`;
+}
+$('#hist').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  if (b.id==='histTab'){ toggleHist(); return; }
+  if (b.id==='histClose'){ $('#hist').classList.remove('open'); syncHist(); return; }
+  if (b.id==='histMore'){ histAll=true; renderHistory(); return; }
+  if (b.dataset.hk){ const r=byKey[b.dataset.hk]; if(!r){ toast('That recipe was removed'); return; } $('#hist').classList.remove('open'); syncHist(); open(r.uid); }
+});
+const wideHist = () => matchMedia('(min-width:1180px)').matches;
+const histCollapsed = () => wideHist() ? document.documentElement.classList.contains('hist-hidden') : !$('#hist').classList.contains('open');
+function syncHist(){ const c=histCollapsed(), t=$('#histTab'); $('#histBody').inert=c; t.setAttribute('aria-expanded', String(!c)); t.title = c ? 'Show update history' : 'Hide update history'; }
+function setHistHidden(h){ document.documentElement.classList.toggle('hist-hidden', h); syncHist(); }
+function toggleHist(){ if (wideHist()) setHistHidden(!document.documentElement.classList.contains('hist-hidden')); else { $('#hist').classList.toggle('open'); syncHist(); } }
+matchMedia('(min-width:1180px)').addEventListener('change', syncHist);
+requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove('no-anim')));
+renderHistory(); syncHist();
+/* when the recipes first open (after the intro and sign-in): show the history for a moment, then tuck it
+   into its pull tab. Pointing at, tapping or tabbing into the panel first keeps it open. */
+let peekHist = () => {};
+(()=>{ const hist=$('#hist'); let t, keep=false, done=false;
+  const stay=()=>{ keep=true; clearTimeout(t); };
+  hist.addEventListener('pointerenter', stay, {once:true}); hist.addEventListener('focusin', stay, {once:true});
+  const peek=()=>{ if(keep) return; if(!wideHist()){ hist.classList.add('open'); syncHist(); }
+    t=setTimeout(()=>{ if(keep) return; if(wideHist()) setHistHidden(true); else { hist.classList.remove('open'); syncHist(); } }, 1500); };
+  peekHist = () => { if (done) return; done=true; if (window.__introDone) peek(); else addEventListener('introdone', peek, {once:true}); };
+})();
+/* the search strip gets its background once it is pinned under the top bar — watched with an
+   IntersectionObserver instead of measuring the page on every scroll event */
+const stk=$('.sticky'), sentinel=document.createElement('div'); sentinel.style.cssText='height:1px;margin-bottom:-1px'; stk.before(sentinel);
+let stuckObs; const watchStuck=()=>{ if(stuckObs) stuckObs.disconnect(); const top=parseFloat(getComputedStyle(stk).top)||0;
+  stuckObs=new IntersectionObserver(([en])=>{ const on=!en.isIntersecting && en.boundingClientRect.top < top+2; stk.classList.toggle('stuck', on); }, {rootMargin:`-${top+1}px 0px 0px 0px`});
+  stuckObs.observe(sentinel); };
+/* start: show the sign-in screen until the database says who this is */
+gateMessage('⏳','Connecting…','Opening Cremer Recipes.');
+CloudSync.start({
+  onUnavailable: msg => gateMessage('⚠️','Can’t open the database', msg, true),
+  onSignedOut: () => { cloud.access=null; $('#acct').hidden=true; gateSignIn(); },
+  onSignedIn: username => { $('#acct').hidden=false; $('#acctI').textContent=(username[0]||'?').toUpperCase(); $('#acct').title=`Signed in as ${username} · sign out`; gateMessage('⏳','Connecting…',`Signed in as ${username}. Checking your access…`); },
+  onAccess: a => {
+    cloud.access=a;
+    if (a.offline) gateMessage('📡','Can’t reach the database','Check the connection, then try again.', true);
+    else if (!a.canRead) gateNoAccess(a);
+    else { openApp(); refreshAll(); }
+  },
+  onRecipes: list => { cloud.recipes=list; cloud.loaded=true; refreshAll(); },
+  onHistory: list => { cloud.history=list; renderHistory(); },
+  onStatus: setSync,
+  onError: msg => toast(msg)
+});
+
+watchStuck(); let rsz; addEventListener('resize',()=>{ clearTimeout(rsz); rsz=setTimeout(watchStuck,200); });
+</script>
+</body>
+</html>

@@ -41,6 +41,39 @@ clears the downloaded recipes from that computer. Changes made with Super show
 as "by Super" in the history; the two logins are shared, so the history can't
 tell which supervisor it was.
 
+## Excel version
+
+**⬇ Download Excel version** (under the title, for Mech and Super) saves
+`Cremer Recipes YYYY-MM-DD.xlsx`: the Excel recipe finder, filled with the
+recipes as they are in the app at that moment.
+
+- **Find Recipe**: search by FG item, bulk, or either; filter by line and
+  bottle size; pick between matches; a recipe card that prints on one page.
+- **Recipes**: every recipe and setting, with last-updated date and source.
+- **Update History**: the changes made in Manage (newest first, up to 194),
+  then the import from the recipe guides.
+- **How to Use**, and **Lists** (the lines, sizes and paper colours).
+
+The copy says when it was downloaded and doesn't update itself; changes are
+made in the app (Super → Manage), and changes typed into the file stay in
+that file. All sheets are protected like the original workbook.
+
+How it's made: `assets/excel/cremer-recipes-template.xlsx` is that workbook
+(built in the Packaging Lead Hub session) with every recipe value removed, so
+the public repository holds no recipe data. `excel-export.js` fills its
+Recipes rows and Update History in the browser with JSZip
+(`assets/vendor/jszip/`) and hands the file over; nothing is sent anywhere.
+To change the workbook's layout, edit the original workbook and rebuild the
+template with `tools/build_excel_template.py ORIGINAL.xlsx cremer-recipes.html
+assets/excel/cremer-recipes-template.xlsx`: it checks that every Recipes column
+lines up with the app's settings, empties the recipe rows, and refuses to
+write the template if any recipe value is left in it. Keep both input files out
+of the repository.
+
+Anyone who can unlock the app can download the whole recipe list this way,
+and the file works anywhere: the network check covers the app, not copies
+taken from it.
+
 ## How the network check works
 
 The two Cremer accounts are `@jde-sched.local` accounts, and LineUp's sign-in
@@ -318,8 +351,13 @@ service cloud.firestore {
   not.
 - `cremer-sync.js`: unlocking (Mech/Super, remember for 12 hours, LineUp's
   network message), live sync with Firestore and saving changes.
+- `excel-export.js`: the **Download Excel version** button's workbook (see
+  Excel version).
+- `assets/excel/cremer-recipes-template.xlsx`: the Excel recipe finder with no
+  recipe data in it; `tools/build_excel_template.py` makes it.
 - `assets/vendor/firebase/`: the Firebase JS SDK 12.19.0 (same copy as
   Packaging Lead Hub), served from this site.
+- `assets/vendor/jszip/`: JSZip 3.10.1 (MIT), for building the Excel file.
 - `firestore.rules`, `firebase.json`: the rules and the emulator settings.
 - `.github/workflows/deploy-pages.yml`: publishes the site to GitHub Pages.
 

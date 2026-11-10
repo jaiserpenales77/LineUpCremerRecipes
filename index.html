@@ -330,6 +330,8 @@ header.topbar .help-btn{font-size:17px;font-weight:800;line-height:1}
 .g-tip{margin:12px 0 14px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--ok) 12%,var(--card));color:var(--ink);font-size:13.5px;font-weight:600}
 .hero-help{display:inline-block;margin-top:10px;border:0;background:none;padding:4px 6px;color:var(--g1);font-weight:700;font-size:14px;cursor:pointer}
 .hero-help:hover{text-decoration:underline}
+.hero-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 14px}
+.hero-help:disabled{opacity:.55;cursor:wait;text-decoration:none}
 @media (max-width:400px){ header.topbar .help-btn{display:none} }
 
 /* in-page confirm + "printing is blocked" dialogs */
@@ -826,7 +828,7 @@ select.vin{text-align:left;padding-right:4px}
 <div class="wrap">
   <section id="viewAuth"></section>
   <section id="viewRecipes" hidden>
-  <div class="hero"><h1>Every setting,<br><span>one search away.</span></h1><p>Cremer counter settings for every FG and bulk item · <span id="badgeT">Line 9 · Line 10</span> <span class="sync" id="syncSt" hidden></span></p><button class="hero-help" id="heroHelp" type="button">New here? How to use →</button></div>
+  <div class="hero"><h1>Every setting,<br><span>one search away.</span></h1><p>Cremer counter settings for every FG and bulk item · <span id="badgeT">Line 9 · Line 10</span> <span class="sync" id="syncSt" hidden></span></p><div class="hero-acts"><button class="hero-help" id="heroHelp" type="button">New here? How to use →</button><button class="hero-help" id="xlBtn" type="button">⬇ Download Excel version</button></div></div>
   <div class="sticky">
     <label class="search" id="sw">
       <span class="sicon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
@@ -849,7 +851,7 @@ select.vin{text-align:left;padding-right:4px}
 
 <div class="pw-modal guide" id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="guideTitle"><div class="pw-box g-box">
   <div class="g-head"><h2 id="guideTitle">How to use</h2><button class="iconbtn g-x" id="guideX" type="button" aria-label="Close">✕</button></div>
-  <ol class="g-list"><li><span class="g-ico" aria-hidden="true">🔎</span><div><b class="g-t">1. Find a recipe</b><p>Type the FG or bulk number in the search box, e.g. <b>2684</b> or <b>A641</b>. Or tap a line or bottle size to narrow the list.</p></div></li><li><span class="g-ico" aria-hidden="true">👆</span><div><b class="g-t">2. Open it</b><p>Tap a recipe card. The four big numbers at the top are the main settings; everything else is below.</p></div></li><li><span class="g-ico" aria-hidden="true">🖨️</span><div><b class="g-t">3. Print it</b><p>Tap <b>Print</b> for a one-page sheet. For colour, turn on <b>Background graphics</b> in the print settings. <b>In Teams or SharePoint?</b> Printing is blocked there — <b>download the file and open it</b>, then print.</p></div></li><li><span class="g-ico" aria-hidden="true">💡</span><div><b class="g-t">4. Have better settings?</b><p>Tap <b>Have better settings?</b>, change the numbers, add your name and shift, tap <b>Print</b> and give the sheet to your supervisor. Don’t change the machine until it’s approved.</p></div></li><li><span class="g-ico" aria-hidden="true">🕘</span><div><b class="g-t">5. What changed?</b><p>The <b>History</b> tab on the right edge shows which recipes changed and when. Tap it to open or close.</p></div></li></ol>
+  <ol class="g-list"><li><span class="g-ico" aria-hidden="true">🔎</span><div><b class="g-t">1. Find a recipe</b><p>Type the FG or bulk number in the search box, e.g. <b>2684</b> or <b>A641</b>. Or tap a line or bottle size to narrow the list.</p></div></li><li><span class="g-ico" aria-hidden="true">👆</span><div><b class="g-t">2. Open it</b><p>Tap a recipe card. The four big numbers at the top are the main settings; everything else is below.</p></div></li><li><span class="g-ico" aria-hidden="true">🖨️</span><div><b class="g-t">3. Print it</b><p>Tap <b>Print</b> for a one-page sheet. For colour, turn on <b>Background graphics</b> in the print settings. <b>Need it in Excel?</b> Tap <b>Download Excel version</b> under the title: a copy with the same search and a printable recipe card.</p></div></li><li><span class="g-ico" aria-hidden="true">💡</span><div><b class="g-t">4. Have better settings?</b><p>Tap <b>Have better settings?</b>, change the numbers, add your name and shift, tap <b>Print</b> and give the sheet to your supervisor. Don’t change the machine until it’s approved.</p></div></li><li><span class="g-ico" aria-hidden="true">🕘</span><div><b class="g-t">5. What changed?</b><p>The <b>History</b> tab on the right edge shows which recipes changed and when. Tap it to open or close.</p></div></li></ol>
   <div class="g-sup">Supervisors only</div>
   <ol class="g-list" start="6"><li><span class="g-ico" aria-hidden="true">🔒</span><div><b class="g-t">6. Manage</b><p>Unlocked with the <b>Super</b> password, the <b>Manage</b> tab lets you <b>Edit</b>, add (<b>+ New recipe</b>) or <b>Remove</b> recipes. Changes save for everyone straight away and show in the update history.</p></div></li></ol>
   <div class="g-tip">✅ Always check the settings on the machine before running.</div>
@@ -858,6 +860,7 @@ select.vin{text-align:left;padding-right:4px}
 <div class="toast" id="toast"></div>
 
 <script src="cremer-sync.js"></script>
+<script src="excel-export.js"></script>
 <script>
 // The recipes themselves live in the database (see cremer-sync.js); only the setting names are here.
 const DATA = {"fields": [{"key": "id", "group": "Product", "label": "ID"}, {"key": "length", "group": "Product", "label": "Length (mm)"}, {"key": "width", "group": "Product", "label": "Width (mm ×0.1)"}, {"key": "transparent", "group": "Product", "label": "Transparent"}, {"key": "count", "group": "General", "label": "Count"}, {"key": "precount", "group": "General", "label": "Precount"}, {"key": "maxReject", "group": "General", "label": "Max. reject / min"}, {"key": "channelWidth", "group": "General", "label": "Channel width (mm ×0.1)"}, {"key": "overcount", "group": "General", "label": "Overcount / bottle"}, {"key": "dosingSpeed", "group": "Dosing Slider", "label": "Dosing speed"}, {"key": "dosingStartPos", "group": "Dosing Slider", "label": "Dosing start position"}, {"key": "dosingStartSpeed", "group": "Dosing Slider", "label": "Dosing start speed"}, {"key": "bpm", "group": "Bottle Handling", "label": "Bottles / min (BPM)"}, {"key": "speedBalance", "group": "Bottle Handling", "label": "Speed balance"}, {"key": "beltSpeed", "group": "Bottle Handling", "label": "Belt speed %"}, {"key": "handlingDischarge", "group": "Bottle Handling", "label": "Discharge time (ms ×10)"}, {"key": "rearSpeed", "group": "Vibratory Plates", "label": "Rear plate speed"}, {"key": "rearPulse", "group": "Vibratory Plates", "label": "Rear plate pulse"}, {"key": "rearInterval", "group": "Vibratory Plates", "label": "Rear plate interval"}, {"key": "frontSpeed", "group": "Vibratory Plates", "label": "Front plate speed"}, {"key": "frontAmp", "group": "Vibratory Plates", "label": "Front plate amplitude"}, {"key": "dischargeTime", "group": "Discharge", "label": "Discharge time (ms ×10)"}, {"key": "dischargeIntervals", "group": "Discharge", "label": "Discharge intervals"}, {"key": "dischargeMode", "group": "Discharge", "label": "Discharge mode"}, {"key": "precountFlap", "group": "Discharge", "label": "Precount on discharge flap"}, {"key": "modules", "group": "Machine", "label": "Counting modules"}, {"key": "ejector", "group": "Machine", "label": "Product ejector"}, {"key": "ionizer", "group": "Machine", "label": "Ionizer"}, {"key": "upsideSensor", "group": "Machine", "label": "Upside-down sensor"}, {"key": "diameter", "group": "Bottle Settings", "label": "Bottle diameter (mm)"}, {"key": "screwHeight", "group": "Bottle Settings", "label": "Feed screw height (mm ×0.1)"}, {"key": "screwAngle", "group": "Bottle Settings", "label": "Feed screw angle (°)"}, {"key": "pockets", "group": "Bottle Settings", "label": "Pockets per wheel"}, {"key": "gateOpen", "group": "Bottle Settings", "label": "Gating cylinder open"}, {"key": "gateClose", "group": "Bottle Settings", "label": "Gating cylinder close"}, {"key": "sideSensor", "group": "Bottle Settings", "label": "Side-down sensor correction"}, {"key": "funnel", "group": "Bottle Settings", "label": "Discharge funnel corr. (mm ×0.1)"}]};
@@ -1437,6 +1440,22 @@ const stk=$('.sticky'), sentinel=document.createElement('div'); sentinel.style.c
 let stuckObs; const watchStuck=()=>{ if(stuckObs) stuckObs.disconnect(); const top=parseFloat(getComputedStyle(stk).top)||0;
   stuckObs=new IntersectionObserver(([en])=>{ const on=!en.isIntersecting && en.boundingClientRect.top < top+2; stk.classList.toggle('stuck', on); }, {rootMargin:`-${top+1}px 0px 0px 0px`});
   stuckObs.observe(sentinel); };
+/* Download Excel version: the Excel recipe finder, filled with the recipes as they are now (excel-export.js) */
+const plainSource = r => r.status==='new' ? 'Added in Manage' : `Cremer Recipe Guide Line ${r.line} (10.06.26) · sheet "${r.sheet}"`+(r.status==='edited'?' · edited in Manage':'');
+$('#xlBtn').onclick = async () => {
+  const b=$('#xlBtn'); if (b.disabled) return;
+  if (!cloud.loaded || !R.length){ toast('No recipes to download yet'); return; }
+  const label=b.textContent; b.disabled=true; b.textContent='Preparing the Excel file…';
+  try{
+    const recipes=[...R].sort((a,b)=>a.line-b.line||nat(a.fg,b.fg)||a.size-b.size||nat(a.bulk||'',b.bulk||''));
+    const {blob, name} = await ExcelExport.build({recipes, history:cloud.history, fieldKeys:FIELDS.map(f=>f.key),
+      guideDate:GUIDE_DATE, guideCount:guideCount(), sourceOf:plainSource, byName, actions:ACT});
+    download(name, blob, blob.type);
+    toast('✓ Excel version downloaded');
+  }catch(e){ console.error(e); toast('Couldn’t make the Excel file. Check the connection and try again.'); }
+  b.disabled=false; b.textContent=label;
+};
+
 /* start: locked until someone unlocks with the Mech or Super password */
 gateMessage('⏳','Connecting…','Opening Cremer Recipes.');
 CloudSync.start({

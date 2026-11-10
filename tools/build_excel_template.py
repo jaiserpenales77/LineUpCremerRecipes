@@ -82,6 +82,52 @@ s1 = set_text(s1, 'M13', 'It doesn’t update: download again for the latest.')
 s1 = set_text(s1, 'M18', 'Change recipes in the app: unlock as Super → Manage.')
 files['xl/worksheets/sheet1.xml'] = s1.encode()
 
+# 4b. A bigger Find Recipe page: columns, rows, text and logo all SCALE times
+#     larger (the card still prints on one page: it is fit to the page). Its
+#     cells get their own copies of their styles, so other sheets don't change.
+SCALE = 1.35
+st = files['xl/styles.xml'].decode()
+fonts_m = re.search(r'(<fonts count=")(\d+)("[^>]*>)(.*?)(</fonts>)', st, re.S)
+font_list = re.findall(r'<font>.*?</font>|<font/>', fonts_m.group(4), re.S)
+xfs_m = re.search(r'(<cellXfs count=")(\d+)("[^>]*>)(.*?)(</cellXfs>)', st, re.S)
+xf_list = re.findall(r'<xf [^>]*?/>|<xf [^>]*?>.*?</xf>', xfs_m.group(4), re.S)
+assert len(font_list) == int(fonts_m.group(2)) and len(xf_list) == int(xfs_m.group(2))
+def bigger_font(f):
+    return re.sub(r'<sz val="([\d.]+)"/>', lambda m: f'<sz val="{round(float(m.group(1)) * SCALE * 2) / 2:g}"/>', f)
+new_xf = {}
+def big_style(old):
+    old = int(old)
+    if old not in new_xf:
+        xf = xf_list[old]
+        fid = int(re.search(r'fontId="(\d+)"', xf).group(1))
+        font_list.append(bigger_font(font_list[fid]))
+        xf = re.sub(r'fontId="\d+"', f'fontId="{len(font_list) - 1}"', xf)
+        if 'applyFont=' not in xf: xf = xf.replace('<xf ', '<xf applyFont="1" ', 1)
+        xf_list.append(xf); new_xf[old] = len(xf_list) - 1
+    return new_xf[old]
+s1 = files['xl/worksheets/sheet1.xml'].decode()
+s1 = re.sub(r'(<c r="[A-Z]+\d+" s=")(\d+)"', lambda m: f'{m.group(1)}{big_style(m.group(2))}"', s1)
+# the line under the logo: shorter words, and shrink to fit if still too long
+d9 = int(re.search(r'<c r="D9" s="(\d+)"', s1).group(1))
+xf_list[d9] = xf_list[d9].replace('<alignment ', '<alignment shrinkToFit="1" ', 1)
+assert 'shrinkToFit' in xf_list[d9]
+for a, b in [('"No match: check the search above"', '"No match: check the search"'), ('"Search for a recipe above"', '"Search above ↑"')]:
+    assert s1.count(html.escape(a, quote=False)) == 1, a
+    s1 = s1.replace(html.escape(a, quote=False), html.escape(b, quote=False))
+s1 = re.sub(r'(<col width=")([\d.]+)("[^>]*min="(\d+)")', lambda m: f'{m.group(1)}{float(m.group(2)) * (SCALE if int(m.group(4)) < 13 else 1):g}{m.group(3)}', s1)
+s1 = re.sub(r'(<row r="\d+" ht=")([\d.]+)"', lambda m: f'{m.group(1)}{round(float(m.group(2)) * SCALE, 1):g}"', s1)
+s1 = s1.replace('<row r="8">', f'<row r="8" ht="{round(15 * SCALE, 1):g}" customHeight="1">')
+s1 = s1.replace('defaultRowHeight="15"', f'defaultRowHeight="{round(15 * SCALE, 1):g}"')
+files['xl/worksheets/sheet1.xml'] = s1.encode()
+st = st[:fonts_m.start()] + f'{fonts_m.group(1)}{len(font_list)}{fonts_m.group(3)}{"".join(font_list)}{fonts_m.group(5)}' + st[fonts_m.end():]
+xfs_m = re.search(r'(<cellXfs count=")(\d+)("[^>]*>)(.*?)(</cellXfs>)', st, re.S)
+st = st[:xfs_m.start()] + f'{xfs_m.group(1)}{len(xf_list)}{xfs_m.group(3)}{"".join(xf_list)}{xfs_m.group(5)}' + st[xfs_m.end():]
+files['xl/styles.xml'] = st.encode()
+dr = files['xl/drawings/drawing1.xml'].decode()
+dr = re.sub(r'<ext cx="(\d+)" cy="(\d+)"/>', lambda m: f'<ext cx="{round(int(m.group(1)) * SCALE)}" cy="{round(int(m.group(2)) * SCALE)}"/>', dr)
+files['xl/drawings/drawing1.xml'] = dr.encode()
+print('Find Recipe page made', SCALE, 'times bigger:', len(new_xf), 'styles copied')
+
 # 5. How to Use: changes are made in the app, not in this copy.
 s2 = files['xl/worksheets/sheet2.xml'].decode()
 s2 = set_text(s2, 'B2', 'LineUp  ·  the Excel version of the Cremer Recipes app')

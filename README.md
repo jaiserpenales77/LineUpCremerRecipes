@@ -49,6 +49,9 @@ recipes as they are in the app at that moment.
 
 - **Find Recipe**: search by FG item, bulk, or either; filter by line and
   bottle size; pick between matches; a recipe card that prints on one page.
+  It is 1.35 times the size of the original workbook's page (columns, rows,
+  text and logo), so it fills more of the screen; `SCALE` in
+  `tools/build_excel_template.py` sets it.
 - **Recipes**: every recipe and setting, with last-updated date and source.
 - **Update History**: the changes made in Manage (newest first, up to 194),
   then the import from the recipe guides.

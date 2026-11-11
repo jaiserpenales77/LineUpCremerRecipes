@@ -3,7 +3,7 @@
 Cremer counter settings for every FG and bulk item on Lines 9 and 10, as a live
 web app: **https://jaiserpenales77.github.io/LineUpCremerRecipes/**
 
-It is the `cremer-recipes.html` app that was shared in Teams, with these changes:
+It is the `cremer-recipes.html` recipe file turned into a web app, with these changes:
 
 - **Two passwords of its own, Mech and Super**, separate from every other app.
   The app opens locked; pick **Mech** or **Super** and type its password.
@@ -127,7 +127,7 @@ please contact the LineUp administrator."
    upgrade to Identity Platform, deploy its functions from Cloud Shell, then
    turn `enabled` on. Nothing extra for Cremer Recipes.
 5. **Load the recipes once:** open the app, unlock as **Super** → **Manage** →
-   **Import recipe file** → choose `cremer-recipes.html` (the file from Teams).
+   **Import recipe file** → choose the `cremer-recipes.html` recipe file.
    It adds the recipes the database doesn't have yet and never changes stored
    ones, so importing again is safe. If someone has unsaved Manage changes in
    that file on their own computer, have them tap **Download updated file**

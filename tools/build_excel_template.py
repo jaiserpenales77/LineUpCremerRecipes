@@ -74,7 +74,7 @@ def set_text(xml, ref, text):
     assert len(pat.findall(xml)) == 1, ref
     return pat.sub(lambda m: f'<c r="{ref}" s="{m.group(1)}" t="inlineStr"><is><t xml:space="preserve">{html.escape(text, quote=False)}</t></is></c>' if text else f'<c r="{ref}" s="{m.group(1)}" t="n"></c>', xml)
 
-# 4. Find Recipe: the Teams notes become notes about this downloaded copy.
+# 4. Find Recipe: the sharing notes become notes about this downloaded copy.
 s1 = files['xl/worksheets/sheet1.xml'].decode()
 s1 = set_text(s1, 'M10', 'THIS COPY')
 s1 = set_text(s1, 'M12', '{{STAMP}}')

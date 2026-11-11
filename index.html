@@ -898,7 +898,7 @@ const text = (k,v) => blank(v)?'—':(TOGGLES.has(k)&&(v===0||v===1)?(v?'ON':'OF
 const html = (k,v) => blank(v)?'<span class="v blank">—</span>':(TOGGLES.has(k)&&(v===0||v===1)?`<span class="on-off ${v?'on':'off'}">${v?'ON':'OFF'}</span>`:`<span class="v">${esc(v)}</span>`);
 const toVal = s => { s=String(s).trim(); if(s==='') return ''; return isNaN(s)?s:Number(s); };
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),1800); }
-/* Saving on this computer. Where the browser blocks it (e.g. the Teams file preview), keep it in memory for this visit. */
+/* Saving on this computer. Where the browser blocks it, keep it in memory for this visit. */
 const CAN_STORE = (()=>{ try{ localStorage.setItem('cremer.t','1'); localStorage.removeItem('cremer.t'); return true; }catch(e){ return false; } })();
 const MEM = {};
 const store = { get(k,d){ try{ const v=localStorage.getItem('cremer.'+k); return v==null?d:JSON.parse(v); }catch(e){ return k in MEM ? JSON.parse(MEM[k]) : d; } },
@@ -919,7 +919,7 @@ $('#helpBtn').onclick=openGuide; $('#heroHelp').onclick=openGuide; $('#guideX').
 guide.addEventListener('click',e=>{ if(e.target===guide) closeGuide(); });
 addEventListener('keydown',e=>{ if(e.key==='Escape' && !guide.hidden) closeGuide(); });
 
-/* In-page dialogs: the Teams file preview blocks the browser's own confirm() and print() */
+/* In-page dialogs: some embedded views block the browser's own confirm() and print() */
 function askConfirm(msg, ok='OK', danger=false){
   return new Promise(res=>{
     const wrap=document.createElement('div'); wrap.className='pw-modal'; wrap.setAttribute('role','alertdialog');
@@ -934,13 +934,13 @@ function askConfirm(msg, ok='OK', danger=false){
     setTimeout(()=>wrap.querySelector('#cfOk').focus(),50);
   });
 }
-/* Forms: the Teams preview blocks form submission, so run the action from the button and the Enter key instead */
+/* Forms: some embedded views block form submission, so run the action from the button and the Enter key instead */
 function onSubmitLike(form, btn, fn){
   form.addEventListener('submit', e=>e.preventDefault());
   btn.addEventListener('click', e=>{ e.preventDefault(); fn(); });
   form.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.tagName==='INPUT'){ e.preventDefault(); fn(); } });
 }
-/* Print, and if the page isn't allowed to print (Teams preview), say so and offer other ways */
+/* Print, and if the page isn't allowed to print (an embedded view), say so and offer other ways */
 function doPrint(){
   let fired=false; const on=()=>{ fired=true; };
   addEventListener('beforeprint', on, {once:true});
@@ -960,7 +960,7 @@ function printBlocked(){
   const wrap=document.createElement('div'); wrap.className='pw-modal'; wrap.setAttribute('role','dialog');
   wrap.innerHTML=`<div class="pw-box pb-box">
     <h2>Printing is blocked here</h2>
-    <p>This page is shown inside another app (for example a Teams tab) that doesn’t allow printing. Open Cremer Recipes in its own browser tab, then printing works:</p>
+    <p>This page is shown inside another app that doesn’t allow printing. Open Cremer Recipes in its own browser tab, then printing works:</p>
     <ol class="pb-steps"><li><b>Open the app’s web address</b> in Chrome or Edge (or use “Open in browser”).</li>
       <li>Find the recipe and tap <b>Print</b>.</li></ol>
     <p class="pb-or">Or try these quick ways (some sites block them too):</p>
@@ -1266,7 +1266,7 @@ function renderManage(){
       <input type="file" id="mFile" accept=".html,.htm,.json,text/html,application/json" hidden>
     </div>
     <div class="s-info">Changes save to the database straight away and everyone sees them live. Each one goes in the update history.</div>
-    ${empty?`<div class="m-warn">📥 <b>The database has no recipes yet.</b> Tap <b>Import recipe file</b> and choose <b>cremer-recipes.html</b> (the file from Teams). If someone has changes saved in that file’s Manage tab on their own computer, have them tap <b>Download updated file</b> there first and import that file instead.</div>`:''}
+    ${empty?`<div class="m-warn">📥 <b>The database has no recipes yet.</b> Tap <b>Import recipe file</b> and choose the <b>cremer-recipes.html</b> recipe file.</div>`:''}
     <label class="search m-search" id="msw"><span class="sicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
       <input id="mq" type="search" autocomplete="off" spellcheck="false" placeholder="Find a recipe to edit or remove" value="${esc(state.mq)}" aria-label="Find a recipe"></label>
     <div class="count">${list.length} of ${R.length} recipes</div>
